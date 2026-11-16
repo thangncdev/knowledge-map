@@ -2,7 +2,7 @@
 export const cleanCodeLessons = {
   'clean_code.1': {
     vi: {
-      title: 'Tên, ý định và hàm có trách nhiệm rõ', duration: '12 phút', level: 'Nắm vững',
+      title: 'Tên, ý định và hàm có trách nhiệm rõ', duration: '20 phút', level: 'Nắm vững',
       summary: 'Đặt tên theo ý nghĩa và chia hàm theo trách nhiệm để người khác hiểu đường đi của mã.',
       takeaway: 'Bạn có thể nhìn một hàm khó đọc, chỉ ra điều đang bị che giấu và cải thiện nó mà không đổi hành vi.',
       sections: [
@@ -17,7 +17,7 @@ export const cleanCodeLessons = {
       ]
     },
     en: {
-      title: 'Names, intent, and focused functions', duration: '12 min', level: 'Core',
+      title: 'Names, intent, and focused functions', duration: '20 min', level: 'Core',
       summary: 'Name things by meaning and give functions clear responsibilities so readers can follow the code.',
       takeaway: 'You can find what a hard-to-read function hides and improve it without changing its behavior.',
       sections: [
@@ -34,7 +34,7 @@ export const cleanCodeLessons = {
   },
   'clean_code.2': {
     vi: {
-      title: 'Kiểm soát độ phức tạp và xử lý lỗi', duration: '11 phút', level: 'Nắm vững',
+      title: 'Kiểm soát độ phức tạp và xử lý lỗi', duration: '20 phút', level: 'Nắm vững',
       summary: 'Làm rõ các nhánh quyết định và biến lỗi thành kết quả có thể xử lý.',
       takeaway: 'Bạn có thể đơn giản hóa một luồng nhiều điều kiện và chỉ ra lỗi nào cần được xử lý ở đâu.',
       sections: [
@@ -49,7 +49,7 @@ export const cleanCodeLessons = {
       ]
     },
     en: {
-      title: 'Managing complexity and errors', duration: '11 min', level: 'Core',
+      title: 'Managing complexity and errors', duration: '20 min', level: 'Core',
       summary: 'Make decision paths clear and turn failures into results callers can handle.',
       takeaway: 'You can simplify a branching flow and decide which failures should be handled where.',
       sections: [
@@ -66,7 +66,7 @@ export const cleanCodeLessons = {
   },
   'clean_code.3': {
     vi: {
-      title: 'Refactoring và đánh đổi của Clean Code', duration: '12 phút', level: 'Nắm vững',
+      title: 'Refactoring và đánh đổi của Clean Code', duration: '20 phút', level: 'Nắm vững',
       summary: 'Cải thiện cấu trúc qua các bước nhỏ, giữ hành vi và biết khi nào nên dừng.',
       takeaway: 'Bạn có thể lập một kế hoạch refactor nhỏ, bảo vệ hành vi cũ và giải thích giá trị của thay đổi.',
       sections: [
@@ -81,7 +81,7 @@ export const cleanCodeLessons = {
       ]
     },
     en: {
-      title: 'Refactoring and Clean Code trade-offs', duration: '12 min', level: 'Core',
+      title: 'Refactoring and Clean Code trade-offs', duration: '20 min', level: 'Core',
       summary: 'Improve structure in small steps, preserve behavior, and know when to stop.',
       takeaway: 'You can plan a small refactor, protect existing behavior, and explain its value.',
       sections: [
@@ -97,3 +97,145 @@ export const cleanCodeLessons = {
     }
   }
 };
+
+// Những phần đào sâu nằm trước bài tự áp dụng và nguồn của mỗi bài.
+const deepSections = {
+  'clean_code.1': {
+    vi: [
+      ['Đọc một hàm như người bảo trì', '<p>Giả sử bạn nhận yêu cầu “đơn hoàn tiền không được tính vào doanh thu”. Đừng bắt đầu bằng việc đổi biểu thức cộng tiền. Hãy đọc nơi gọi hàm, tìm định nghĩa “doanh thu” trong sản phẩm, xác định dữ liệu đầu vào có thể thiếu và xem hàm có ghi dữ liệu hay gửi thông báo không. Ghi một sơ đồ rất ngắn: chọn đơn → tính tổng → định dạng → gửi. Sơ đồ này cho biết quy tắc hoàn tiền thuộc bước chọn đơn hay bước tính tổng; nó cũng chỉ ra những bước không cần sửa.</p><p>Một tên tốt phải trả lời câu hỏi ở đúng cấp độ. <code>orders</code> là tập dữ liệu, <code>eligibleOrders</code> là tập sau khi áp dụng quy tắc, <code>revenue</code> là kết quả tính. Nếu một hàm tên <code>calculateRevenue</code> lại gửi email, tên đang hứa ít hơn hành vi thật. Khi đó tách phần gửi ra hoặc đổi ranh giới hàm. Đừng đổi tên để che tác dụng phụ.</p>'],
+      ['Ví dụ mã có thể kiểm chứng', `<p>Trước khi sửa, đoạn mã dưới đây vừa lọc vừa tính bằng những ký hiệu khó đoán. Đặc biệt, <code>o.s</code> không cho biết trạng thái nào được chấp nhận.</p><pre><code>function total(orders) {
+  return orders.filter(o =&gt; o.s === "paid")
+    .reduce((x, o) =&gt; x + o.p, 0);
+}</code></pre><p>Sau khi xác nhận <code>amount</code> là số tiền đã được chuẩn hóa và đơn hoàn tiền có trạng thái <code>refunded</code>, ta có thể diễn đạt quy tắc bằng tên. Hàm tính chỉ nhận dữ liệu và trả kết quả; nó không đọc database hoặc gửi email.</p><pre><code>function isRevenueEligible(order) {
+  return order.status === "paid";
+}
+
+function calculateRevenue(orders) {
+  return orders.filter(isRevenueEligible)
+    .reduce((total, order) =&gt; total + order.amount, 0);
+}</code></pre><p>Ví dụ này vẫn cần quyết định riêng về đơn thiếu <code>amount</code>, đơn tiền âm và đơn được hoàn một phần. Tên rõ giúp thấy chỗ phải hỏi nghiệp vụ, chứ không tự đưa ra câu trả lời nghiệp vụ.</p>`],
+      ['Chọn ranh giới hàm', '<p>Một cách kiểm tra hữu ích là hỏi: nếu quy tắc này đổi, những nơi nào phải sửa? Nếu thay cách gửi báo cáo mà phải mở hàm tính doanh thu, ranh giới đang bị lẫn. Nếu đổi quy tắc “đơn hợp lệ” mà phải sửa ở nhiều màn hình, có thể thiếu một tên chung cho quy tắc. Ngược lại, hai đoạn nhìn giống nhau nhưng phục vụ hai mục đích khác nhau chưa chắc nên gộp.</p><p>Hàm điều phối như <code>createReport</code> có thể gọi nhiều hàm con mà vẫn có một trách nhiệm: hoàn thành một tác vụ ở cấp độ cao. Hàm con nên dùng cùng mức trừu tượng với nhau. Việc tách <code>getOrders</code>, <code>calculateRevenue</code>, <code>saveReport</code> thường giúp đọc luồng; tách từng phép cộng thành hàm riêng thường chỉ tăng số lần phải nhảy trang.</p>'],
+      ['Bằng chứng đã cải thiện', '<p>So sánh trước và sau bằng ba phép thử. Thứ nhất, đưa cho một người chưa viết đoạn mã tên hàm và chữ ký: họ có dự đoán đúng đầu vào, đầu ra và tác dụng phụ không? Thứ hai, thử thay một quy tắc cụ thể: số nơi phải sửa có giảm không? Thứ ba, chạy các trường hợp đã biết: đơn đã thanh toán, đơn hoàn tiền, danh sách rỗng và dữ liệu lỗi có giữ đúng hành vi mong muốn không?</p><p>Nếu tên mới dài hơn nhưng vẫn không nói rõ ý nghĩa, hoặc việc tách hàm làm luồng bị phân mảnh, hãy lùi lại. Mục tiêu không phải đạt hình thức “sạch”; mục tiêu là giảm thời gian hiểu mã và giảm rủi ro khi sửa.</p>']
+    ],
+    en: [
+      ['Read like a maintainer', '<p>Suppose the request is “refunded orders must not count as revenue.” Do not begin by changing the summation. Read the callers, find the product definition of revenue, identify missing input data, and check whether the function writes data or sends notifications. Sketch the flow: select orders → calculate → format → send. That sketch locates the refund rule in selection or calculation and identifies steps that need no change.</p><p>Names should answer questions at the right level. <code>orders</code> is input data, <code>eligibleOrders</code> is data after a business rule, and <code>revenue</code> is a result. If a function called <code>calculateRevenue</code> also sends email, its name promises less than it does. Separate the side effect or change the boundary; do not use a better name to hide it.</p>'],
+      ['A testable code example', `<p>Before the change, this code filters and sums using abbreviations. In particular, <code>o.s</code> does not tell readers which state is accepted.</p><pre><code>function total(orders) {
+  return orders.filter(o =&gt; o.s === "paid")
+    .reduce((x, o) =&gt; x + o.p, 0);
+}</code></pre><p>After confirming that <code>amount</code> is a normalized amount and refunded orders have status <code>refunded</code>, name the rule. The calculation takes data and returns a result; it does not read a database or send email.</p><pre><code>function isRevenueEligible(order) {
+  return order.status === "paid";
+}
+
+function calculateRevenue(orders) {
+  return orders.filter(isRevenueEligible)
+    .reduce((total, order) =&gt; total + order.amount, 0);
+}</code></pre><p>The example still needs separate decisions about missing amounts, negative amounts, and partial refunds. Clear names expose those questions; they do not answer business questions by themselves.</p>`],
+      ['Choose function boundaries', '<p>Ask what must change when a rule changes. If changing delivery requires editing revenue calculation, responsibilities are mixed. If changing “eligible order” means editing several screens, a shared named rule may be missing. Conversely, two similar passages with different purposes may need to remain separate.</p><p>An orchestrating function such as <code>createReport</code> may call several helpers while retaining one high-level responsibility. Its helpers should operate at comparable levels of abstraction. Separating <code>getOrders</code>, <code>calculateRevenue</code>, and <code>saveReport</code> can clarify the flow; extracting every addition into its own helper usually makes navigation harder.</p>'],
+      ['Evidence of improvement', '<p>Compare before and after with three checks. First, show a reader the name and signature: can they predict inputs, outputs, and side effects? Second, change one specific rule: are fewer places affected? Third, run known cases: paid orders, refunded orders, an empty list, and invalid data. Do they still behave as intended?</p><p>If a longer name remains vague or extracted helpers fragment the flow, reconsider the change. The goal is not to satisfy a formal “clean” shape. The goal is to reduce the time needed to understand and safely change the code.</p>']
+    ]
+  },
+  'clean_code.2': {
+    vi: [
+      ['Lập bảng các kết quả trước khi viết nhánh', '<p>Với API tạo báo cáo, hãy liệt kê rõ năm kết quả: không có quyền, khoảng ngày sai, không có đơn, lưu thất bại và thành công. Mỗi kết quả cần có điều kiện kích hoạt, phản hồi cho người gọi và thông tin phục vụ điều tra. Ví dụ “không có đơn” có thể là một kết quả hợp lệ; “không lưu được” là thất bại vận hành. Nếu cả hai cùng trả <code>[]</code>, tầng giao diện không thể đưa ra hành động đúng.</p><p>Đừng suy từ mã trạng thái HTTP một cách máy móc. Chọn hợp đồng theo ý nghĩa thao tác: nếu tạo báo cáo là một job bất đồng bộ, phản hồi “đã nhận” khác “đã hoàn tất”. Ghi rõ khi nào thao tác có thể thử lại, và liệu gửi lại có tạo báo cáo trùng hay không. Những câu hỏi này phải được trả lời trước khi tối ưu số dòng mã.</p>'],
+      ['Từ điều kiện lồng nhau đến đường đi rõ', `<p>Thay vì lồng mọi bước trong một khối <code>if</code>, xác định điều kiện nào dừng tác vụ ngay và diễn đạt nó ở đầu. Sau đó đường thành công có thể đọc theo thứ tự công việc.</p><pre><code>function createReport(request, user) {
+  if (!canReadReports(user)) return { ok: false, error: "FORBIDDEN" };
+  if (!isValidPeriod(request.period))
+    return { ok: false, error: "INVALID_PERIOD" };
+
+  const orders = loadOrders(request.period);
+  if (orders.length === 0) return { ok: true, report: emptyReport() };
+
+  return saveReport(buildReport(orders));
+}</code></pre><p>Đây là sơ đồ đơn giản, chưa phải code production: <code>loadOrders</code> và <code>saveReport</code> còn có thể thất bại. Điều quan trọng là người đọc thấy chỗ nào quyết định quyền, chỗ nào kiểm tra dữ liệu và chỗ nào tạo kết quả. Bổ sung xử lý lỗi tại đúng ranh giới phụ thuộc, không bao một <code>catch</code> rộng rồi trả kết quả rỗng.</p>`],
+      ['Phân loại lỗi theo khả năng xử lý', '<p>Lỗi đầu vào cần người gọi sửa; lỗi quyền cần dừng và có thể ghi nhận; lỗi dịch vụ tạm thời có thể thử lại sau một khoảng thời gian; lỗi lập trình hoặc dữ liệu bất biến bị vi phạm cần được phát hiện và điều tra. Một nhãn lỗi như <code>REPORT_STORAGE_FAILED</code> có ích khi tầng trên biết làm gì với nó. Giữ mã lỗi ổn định cho máy, thông điệp dễ hiểu cho người dùng và thông tin chẩn đoán cho log.</p><p>Khi thêm ngữ cảnh, giữ nguyên nguyên nhân gốc. Nếu chỉ ghi “không tạo được báo cáo”, người vận hành không biết là hết dung lượng, timeout hay quyền truy cập tệp. Nhưng không gửi đường dẫn nội bộ, stack trace hoặc secret cho trình duyệt. Cùng một lỗi có thể có thông tin khác nhau cho người dùng và cho vận hành.</p>'],
+      ['Kiểm tra các đường đi quan trọng', '<p>Thử ít nhất bốn trường hợp: yêu cầu hợp lệ có đơn, yêu cầu hợp lệ không có đơn, khoảng ngày sai và dịch vụ lưu thất bại. Với mỗi trường hợp, kiểm tra cả kết quả lẫn tác dụng phụ: có tệp được tạo không, có ghi log phù hợp không, có gửi thông báo trùng không. Một test chỉ khẳng định hàm “không ném lỗi” chưa chứng minh phản hồi đúng.</p><p>Nếu nhiều lỗi khác nhau được gom chung vì giao diện chỉ có một câu thông báo, vẫn giữ mã lỗi khác nhau trong hợp đồng nội bộ. Điều đó cho phép sửa giao diện và vận hành về sau mà không phải đoán lại chuyện gì đã xảy ra.</p>']
+    ],
+    en: [
+      ['List outcomes before branches', '<p>For a report creation API, list five outcomes: forbidden, invalid date range, no orders, storage failure, and success. Each needs a trigger, a caller response, and diagnostic information. “No orders” may be a valid result; “cannot store the report” is an operational failure. If both return <code>[]</code>, the interface cannot choose the right next step.</p><p>Do not infer the entire design from an HTTP status code. Choose a contract that matches the operation: an asynchronous job being accepted is different from a completed report. Specify when retry is safe and whether resending can create duplicates. Answer these questions before optimizing line count.</p>'],
+      ['Make the path visible', `<p>Instead of nesting every step in one <code>if</code> block, identify conditions that stop the task and handle them first. The success path can then follow the order of work.</p><pre><code>function createReport(request, user) {
+  if (!canReadReports(user)) return { ok: false, error: "FORBIDDEN" };
+  if (!isValidPeriod(request.period))
+    return { ok: false, error: "INVALID_PERIOD" };
+
+  const orders = loadOrders(request.period);
+  if (orders.length === 0) return { ok: true, report: emptyReport() };
+
+  return saveReport(buildReport(orders));
+}</code></pre><p>This is a simplified sketch, not production code: <code>loadOrders</code> and <code>saveReport</code> can still fail. The value is that readers can locate the access decision, input check, and result creation. Handle failures at the relevant dependency boundary rather than wrapping everything in one broad <code>catch</code> that returns an empty result.</p>`],
+      ['Classify failures by response', '<p>Invalid input requires a caller correction; denied access should stop and may need an audit record; a temporary service failure may deserve a bounded retry; a broken invariant needs investigation. An error such as <code>REPORT_STORAGE_FAILED</code> is useful when an upper layer knows what to do with it. Keep machine-readable error codes stable, user messages understandable, and diagnostic details available to operators.</p><p>Preserve the original cause when adding context. “Report creation failed” alone cannot distinguish a full disk, timeout, or file permission. At the same time, do not send internal paths, stack traces, or secrets to the browser. One failure can have different information for users and operators.</p>'],
+      ['Check the important paths', '<p>Try at least four cases: a valid request with orders, a valid request with none, an invalid period, and a failed storage service. For each, check the result and the side effects: was a file created, was useful information logged, and was a notification sent twice? A test that only asserts “no exception was thrown” does not establish correct behavior.</p><p>If an interface currently shows one generic error message for several failures, retain distinct error codes in the internal contract. That allows future interface and operational improvements without reconstructing what happened from ambiguous data.</p>']
+    ]
+  },
+  'clean_code.3': {
+    vi: [
+      ['Bắt đầu từ chi phí thay đổi thật', '<p>Hãy nhớ lần sửa gần đây nhất: bạn mất thời gian ở đâu? Nếu phải mở ba file chỉ để biết “đơn hợp lệ” là gì, vấn đề có thể là quy tắc phân tán. Nếu test khó viết vì hàm vừa tính toán vừa gọi mạng, vấn đề có thể là ranh giới phụ thuộc. Nếu chỉ thấy hàm “dài”, đừng vội tách: tìm lý do cụ thể khiến nó khó hiểu hoặc khó sửa. Một code smell là lời nhắc để điều tra, chưa phải bằng chứng phải refactor.</p><p>Viết mục tiêu trước khi sửa: “thay quy tắc hoàn tiền ở một nơi”, “kiểm tra phép tính mà không gọi dịch vụ gửi”, hoặc “người review nhận ra các bước của luồng”. Mục tiêu cụ thể giúp bạn biết khi nào dừng và đánh giá được thay đổi có ích hay không.</p>'],
+      ['Một lượt refactor có kiểm soát', '<p>Giả sử ba màn hình cùng lọc đơn được tính doanh thu. Bước 1: ghi các trường hợp hiện tại gồm đã thanh toán, hoàn tiền, hủy và thiếu trạng thái. Bước 2: hỏi người phụ trách nghiệp vụ liệu cả ba màn hình có dùng cùng định nghĩa doanh thu không. Bước 3: thêm test hoặc ví dụ đối chứng cho từng nơi. Bước 4: đặt tên quy tắc tại một nơi và chuyển từng caller sang dùng nó. Bước 5: chạy kiểm tra và đọc diff sau mỗi lần chuyển.</p><p>Nếu câu trả lời ở bước 2 là “khác nhau”, dừng việc gộp. Có thể đặt tên riêng như <code>isInvoiceRevenueEligible</code> và <code>isForecastRevenueEligible</code>. Hai tên này cho phép quy tắc phát triển độc lập. Việc giữ một ít mã lặp có thể rẻ hơn một hàm chung đầy cờ tùy chọn và nhánh điều kiện.</p>'],
+      ['So sánh hai kiểu trừu tượng hóa', '<p>Một hàm chung <code>isEligible(order, includeRefunds, includePending, useForecast)</code> trông như đã loại bỏ trùng lặp, nhưng mỗi nơi gọi phải hiểu tổ hợp cờ. Khi thêm quy tắc mới, số tổ hợp tăng và khó kiểm thử. Nếu các khái niệm khác nhau, dùng hai hàm tên theo mục đích. Nếu đúng là một quy tắc chung, một hàm <code>isRevenueEligible(order)</code> với hợp đồng rõ là đủ.</p><p>Tiêu chí chọn không phải số dòng bị xóa. Hỏi liệu tên mới làm rõ quyết định nghiệp vụ, liệu một thay đổi tương lai chỉ sửa đúng nơi, và liệu test có chỉ ra nơi hỏng khi quy tắc đổi. Trừu tượng hóa tốt giảm số quyết định người đọc phải suy ra; trừu tượng hóa xấu chuyển chúng vào tham số và cấu hình.</p>'],
+      ['Dấu hiệu nên dừng', '<p>Dừng khi mục tiêu đã đạt và các trường hợp đã ghi vẫn đúng. Dừng sớm hơn nếu phát hiện hành vi hiện tại không được hiểu rõ, test không bảo vệ được phần đang sửa, hoặc refactor bắt đầu kéo thêm nhiều module ngoài phạm vi. Ghi câu hỏi chưa giải quyết vào công việc riêng thay vì mở rộng âm thầm. Một thay đổi nhỏ, có lý do và bằng chứng, dễ review hơn một lượt “dọn dẹp” khắp dự án.</p><p>Sau khi hoàn tất, thử nêu giá trị bằng một câu cụ thể: “quy tắc hoàn tiền giờ chỉ ở một nơi và ba luồng hiện có vẫn cho kết quả cũ”. Nếu chỉ có thể nói “mã đẹp hơn”, hãy kiểm tra lại liệu thay đổi có thực sự giúp người đọc hoặc người sửa tiếp theo không.</p>']
+    ],
+    en: [
+      ['Start with a real change cost', '<p>Recall the last change: where did time go? If you opened three files just to learn what “eligible order” means, the rule may be scattered. If tests were hard to write because a function both calculates and calls the network, the dependency boundary may be wrong. If you only noticed a “long function”, investigate why it is hard to understand or change before extracting anything. A code smell is a prompt to investigate, not proof that refactoring is required.</p><p>Write a goal before editing: “change the refund rule in one place”, “test calculation without calling delivery”, or “make the workflow visible to reviewers”. A concrete goal tells you when to stop and whether the change was valuable.</p>'],
+      ['A controlled refactoring pass', '<p>Suppose three screens filter orders for revenue. Step 1: record current cases including paid, refunded, canceled, and missing-status orders. Step 2: ask the business owner whether all three screens mean the same kind of revenue. Step 3: add tests or comparison examples for each caller. Step 4: name the rule in one place and migrate callers one at a time. Step 5: run checks and read the diff after each migration.</p><p>If step 2 reveals different definitions, stop the consolidation. Names such as <code>isInvoiceRevenueEligible</code> and <code>isForecastRevenueEligible</code> can evolve independently. A little repetition may cost less than a shared function full of flags and branches.</p>'],
+      ['Compare two abstractions', '<p>A shared function <code>isEligible(order, includeRefunds, includePending, useForecast)</code> appears to remove duplication, but every caller must understand the flag combination. New rules multiply combinations and test cases. If the concepts differ, use purpose-specific functions. If there truly is one shared rule, <code>isRevenueEligible(order)</code> with a clear contract is enough.</p><p>Do not judge the change by lines removed. Ask whether the new name clarifies a business decision, whether a future change touches the right place, and whether tests point to the broken rule. A good abstraction reduces the decisions readers must infer; a poor one moves them into parameters and configuration.</p>'],
+      ['Know when to stop', '<p>Stop when the stated goal is met and recorded cases still behave correctly. Stop sooner if current behavior remains unclear, tests do not protect the code being edited, or the refactor begins spreading through unrelated modules. Record open questions separately instead of silently widening scope. A small change with a reason and evidence is easier to review than a broad “cleanup”.</p><p>Afterward, state the value in one concrete sentence: “the refund rule now lives in one place, and the three existing flows still return their previous results.” If all you can say is “the code looks nicer”, revisit whether the change helps the next reader or developer.</p>']
+    ]
+  }
+};
+
+for (const [id, translations] of Object.entries(deepSections)) {
+  for (const language of ['vi', 'en']) {
+    const sections = cleanCodeLessons[id][language].sections;
+    sections.splice(sections.length - 2, 0, ...translations[language]);
+  }
+}
+
+// Các ý cốt lõi được đối chiếu với mục lục Clean Code (ấn bản 2),
+// Refactoring (ấn bản 2) và hướng dẫn code review của Google.
+const sourceCoreSections = {
+  'clean_code.1': {
+    vi: [
+      ['Hệ thống tên nhất quán', 'Tên phải bộc lộ ý định, tránh gây hiểu sai và đủ khác biệt để tìm kiếm. Dùng cùng một từ cho cùng một khái niệm trong phạm vi dự án; nếu <code>account</code>, <code>customer</code> và <code>user</code> khác nhau, ghi rõ ranh giới của chúng. Tên biến cần mô tả giá trị, tên hàm nên nói hành động và tên boolean nên đọc như một câu hỏi, ví dụ <code>isPaymentSettled</code>. Độ dài phù hợp phụ thuộc phạm vi: biến dùng trong hai dòng có thể ngắn; tên public API cần mang đủ ngữ cảnh. Khi đổi tên, tìm mọi nơi gọi và kiểm tra cả hợp đồng bên ngoài nếu tên được xuất ra API.'],
+      ['Hợp đồng của hàm và tác dụng phụ', 'Đọc một hàm qua đầu vào, đầu ra, lỗi có thể xảy ra và tác dụng phụ. Nếu tên <code>getOrder</code> nhưng hàm còn ghi log nghiệp vụ hoặc cập nhật trạng thái, người gọi dễ dùng sai. Số tham số nhiều, cờ boolean như <code>send(order, true)</code> và sự trộn lẫn giữa truy vấn với thay đổi trạng thái là dấu hiệu cần xem lại hợp đồng. Có thể đặt tên hàm theo mục đích, gom các giá trị luôn đi cùng nhau thành một khái niệm, hoặc tách thao tác đọc và ghi. Chỉ làm khi hợp đồng mới giúp người gọi hiểu và kiểm thử dễ hơn.'],
+      ['Bình luận và định dạng', 'Tên và cấu trúc nên nói được mã làm gì; bình luận dành cho lý do, giới hạn, cảnh báo và hợp đồng mà mã không tự diễn đạt. Xóa bình luận đã lỗi thời hoặc đoạn mã bị comment lại vì chúng dễ đánh lừa người đọc. Đặt các phần liên quan gần nhau, dùng khoảng trắng để tách ý và tuân theo formatter chung của nhóm. Đừng trộn việc định dạng hàng loạt với thay đổi hành vi trong một lượt review: diff lớn che mất lỗi quan trọng.']
+    ],
+    en: [
+      ['A consistent naming system', 'Names should reveal intent, avoid misleading readers, and make important concepts searchable. Use one word for one concept within a project; if <code>account</code>, <code>customer</code>, and <code>user</code> differ, document the boundaries. Variable names describe values, function names describe actions, and boolean names can read like questions, such as <code>isPaymentSettled</code>. The right length depends on scope: a two-line local can be short, while a public API needs enough context. When renaming, find every caller and check any external contract.'],
+      ['Function contracts and side effects', 'Read a function through its inputs, output, possible failures, and side effects. A function named <code>getOrder</code> that also changes state can surprise callers. Many parameters, boolean flags such as <code>send(order, true)</code>, and mixed queries and mutations are prompts to revisit the contract. Name functions by purpose, group values that belong together, or separate reads from writes when doing so makes calling and testing clearer.'],
+      ['Comments and formatting', 'Names and structure should explain what code does; comments are most useful for rationale, limits, warnings, or contracts that code cannot express. Remove stale comments and commented-out code because they can mislead. Keep related pieces close, use whitespace to separate ideas, and follow the team formatter. Avoid mixing a whole-file formatting change with a behavior change: the resulting diff can hide an important bug.']
+    ]
+  },
+  'clean_code.2': {
+    vi: [
+      ['Dữ liệu, đối tượng và ranh giới', 'Chọn cách biểu diễn theo thao tác cần hỗ trợ. Một bản ghi dữ liệu thuần có thể phù hợp để trao đổi qua API; một đối tượng có thể bảo vệ quy tắc bất biến và cung cấp hành vi có tên. Đừng tạo getter rồi để mọi nơi tự sửa thuộc tính nếu đối tượng đáng lẽ phải giữ quy tắc. Tại ranh giới với thư viện hay dịch vụ ngoài, chuyển dữ liệu và lỗi của họ sang khái niệm của ứng dụng. Nhờ vậy khi nhà cung cấp đổi, phần nghiệp vụ không phải hiểu chi tiết của SDK.'],
+      ['Đầu vào thiếu và lỗi có nghĩa', 'Quy định rõ dữ liệu có thể vắng mặt hay không: thiếu đơn, danh sách rỗng, giá trị <code>null</code> và lỗi đọc dữ liệu là các trạng thái khác nhau. Kiểm tra giả định ở nơi dữ liệu đi vào hệ thống, sau đó giữ hợp đồng nội bộ nhất quán. Chỉ dùng ngoại lệ cho trường hợp mà tầng gọi cần xử lý như ngoại lệ trong ngôn ngữ và kiến trúc hiện tại; mã lỗi có kiểu cũng có thể phù hợp. Điều bắt buộc là người gọi phân biệt được kết quả hợp lệ với thất bại và lỗi giữ được nguyên nhân.'],
+      ['Test sạch và đúng cấp độ', 'Test cần kể một hành vi quan sát được: điều kiện ban đầu, hành động, kết quả và tác dụng phụ. Kiểm tra trường hợp thường gặp, biên và thất bại quan trọng. Một test tốt phải hỏng khi quy tắc tương ứng hỏng, dễ đọc và không phụ thuộc thứ tự chạy. Dùng unit test cho quy tắc thuần, integration test cho ranh giới thật, end-to-end test cho luồng người dùng quan trọng; không cố đẩy mọi thứ xuống một cấp. Test cũng là mã cần bảo trì, vì vậy tránh setup và assertion phức tạp che ý định.']
+    ],
+    en: [
+      ['Data, objects, and boundaries', 'Choose a representation for the operations it must support. A plain data record may suit API exchange; an object may protect invariants and expose named behavior. Do not add getters only to let every caller mutate state that the object should own. At third-party boundaries, translate vendor data and failures into application concepts. Then a provider change does not force domain logic to understand SDK details.'],
+      ['Missing input and meaningful failure', 'Specify whether data can be absent: a missing order, an empty list, <code>null</code>, and a failed read are different states. Check assumptions when data enters the system and keep internal contracts consistent. Exceptions are useful when the caller should handle an exceptional condition in the chosen language and architecture; typed error results can also be appropriate. The essential property is that callers distinguish valid outcomes from failures and retain the original cause.'],
+      ['Clean tests at the right level', 'A test should describe observable behavior: setup, action, result, and side effects. Cover a common case, meaningful boundaries, and important failures. A useful test fails when its rule breaks, reads clearly, and does not depend on execution order. Use unit tests for pure rules, integration tests for real boundaries, and end-to-end tests for important user flows. Tests are maintained code, so avoid elaborate setup and assertions that hide intent.']
+    ]
+  },
+  'clean_code.3': {
+    vi: [
+      ['Module và trách nhiệm thay đổi', 'Một lớp hoặc module có trọng tâm khi các phần bên trong thường thay đổi vì cùng một lý do. Nhóm theo quy tắc và hành vi liên quan, thay vì gom mọi tiện ích vào <code>Utils</code> hoặc chia file chỉ để đạt số dòng mong muốn. Khi sửa quy tắc tính doanh thu, danh sách file liên quan nên dự đoán được. Nếu một module vừa biết chi tiết lưu trữ vừa quyết định chính sách giá, hãy xem có thể đặt ranh giới giữa hai trách nhiệm hay không.'],
+      ['Thiết kế đơn giản và mã lặp', 'Giữ thiết kế đủ cho yêu cầu hiện có, diễn đạt rõ ý định và giảm trùng lặp của cùng một kiến thức. Hai đoạn mã giống cú pháp chưa chắc là cùng quy tắc; gộp sai sẽ buộc các ngữ cảnh thay đổi cùng nhau. Ngược lại, cùng một quy tắc nghiệp vụ nằm ở nhiều nơi dễ bị sửa lệch. Hỏi “điều gì sẽ đổi cùng nhau?” trước khi trừu tượng hóa, và chỉ thêm tầng hay cấu hình khi có nhu cầu thật.'],
+      ['Một số phép refactor có tên', 'Khi một đoạn có trách nhiệm riêng, cân nhắc <em>Extract Function</em>; khi tên che ý định, dùng <em>Rename Variable/Function</em>; khi điều kiện lồng sâu che đường chính, cân nhắc <em>Guard Clauses</em>; khi cờ boolean bắt người gọi đoán, cân nhắc <em>Remove Flag Argument</em>. Đây là lựa chọn dựa trên vấn đề cụ thể, không phải checklist phải áp dụng hết. Với mỗi phép, ghi hành vi cần giữ, thực hiện một bước nhỏ, chạy test liên quan và đọc diff trước bước kế tiếp.']
+    ],
+    en: [
+      ['Modules and reasons to change', 'A class or module is focused when its parts tend to change for the same reason. Group related rules and behavior instead of collecting everything in <code>Utils</code> or splitting files to meet a line count. A revenue rule change should touch a predictable set of files. If one module knows storage details and also decides pricing policy, look for a boundary between those responsibilities.'],
+      ['Simple design and duplication', 'Keep design sufficient for current requirements, express intent, and reduce duplication of the same knowledge. Similar syntax may represent different rules; merging it can force unrelated contexts to change together. Conversely, one business rule copied into many places can drift. Ask “what changes together?” before abstracting, and add a layer or configuration only when a real need appears.'],
+      ['Named refactoring moves', 'Consider <em>Extract Function</em> when a passage has its own responsibility, <em>Rename Variable/Function</em> when a name hides intent, <em>Guard Clauses</em> when nested conditions obscure the main path, and <em>Remove Flag Argument</em> when callers must guess what a boolean means. Choose a move for a specific problem rather than applying a checklist. For each move, record behavior to preserve, make one small change, run relevant tests, and inspect the diff.']
+    ]
+  }
+};
+
+for (const [id, translations] of Object.entries(sourceCoreSections)) {
+  for (const language of ['vi', 'en']) {
+    const sections = cleanCodeLessons[id][language].sections;
+    sections.splice(sections.length - 2, 0, ...translations[language]);
+    sections.at(-1)[1] += language === 'vi'
+      ? '<br><br>Khung ý của bài được đối chiếu với <a href="https://www.oreilly.com/library/view/clean-code-a/9780135398586/toc.xhtml" target="_blank" rel="noopener noreferrer">mục lục Clean Code, ấn bản 2</a>, <a href="https://martinfowler.com/books/refactoring.html" target="_blank" rel="noopener noreferrer">Refactoring, ấn bản 2</a> và <a href="https://google.github.io/eng-practices/review/reviewer/looking-for.html" target="_blank" rel="noopener noreferrer">Google Engineering Practices</a>. Nội dung là bản biên soạn thực hành, không thay thế các tác phẩm gốc.'
+      : '<br><br>This lesson maps its core ideas to the <a href="https://www.oreilly.com/library/view/clean-code-a/9780135398586/toc.xhtml" target="_blank" rel="noopener noreferrer">Clean Code, 2nd edition contents</a>, <a href="https://martinfowler.com/books/refactoring.html" target="_blank" rel="noopener noreferrer">Refactoring, 2nd edition</a>, and <a href="https://google.github.io/eng-practices/review/reviewer/looking-for.html" target="_blank" rel="noopener noreferrer">Google Engineering Practices</a>. This is a practical synthesis rather than a replacement for the original works.';
+  }
+}

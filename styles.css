@@ -24,3 +24,7 @@
 
 @media(max-width:1200px){.map-toolbar{flex-wrap:wrap;padding-bottom:4px;gap:0 15px}.map-actions button{padding:7px 0}.map-tabs{flex-wrap:wrap}.map-actions{margin-left:auto}}
 @media(max-width:650px){.map-actions{width:100%;justify-content:flex-end;gap:17px}.map-actions button{font-size:8px;padding:6px 0}.map-toolbar{padding-bottom:5px}}
+/* Multi-paragraph lessons and code examples. */
+.article-section p + p{margin-top:14px}
+.article-section pre{max-width:100%;margin:18px 0;padding:18px 20px;overflow-x:auto;border:1px solid #355247;border-radius:8px;background:#0b171b;color:#d8e8df;font:12px/1.7 var(--mono);tab-size:2}
+.article-section pre code{display:block;padding:0;border:0;background:none;color:inherit;font:inherit;white-space:pre}

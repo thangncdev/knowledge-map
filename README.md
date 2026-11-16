@@ -29,3 +29,17 @@ Mở `http://localhost:4173`. Không cần cài package hay chạy build.
 - Giao diện và nội dung toàn cảnh có tiếng Việt, tiếng Anh; nút EN/VI ghi nhớ lựa chọn trên trình duyệt. Tiến độ dùng cùng ID ở cả hai ngôn ngữ.
 
 Dữ liệu map ở [`src/data.js`](./src/data.js); bài mẫu Clean Code ở [`src/clean-code.js`](./src/clean-code.js). Các lĩnh vực khác hiện là nội dung toàn cảnh để chọn hướng đào sâu. Bài Clean Code đã gắn nguồn chọn lọc, nhưng vẫn cần review biên tập trước khi coi là bản cuối.
+
+## Chuẩn biên soạn bài chuyên sâu
+
+Mỗi lĩnh vực bắt đầu từ 1–3 tài liệu gốc hoặc tài liệu được cộng đồng sử dụng rộng rãi. Lập danh mục các ý cốt lõi từ mục lục và nội dung nguồn trước khi viết. Mỗi mốc phải chỉ rõ khái niệm, vấn đề nó giải quyết, cách áp dụng, giới hạn hoặc đánh đổi, một tình huống cụ thể và cách kiểm chứng. Ưu tiên đủ ý và đúng ngữ cảnh hơn độ dài. Không sao chép nguyên văn tài liệu nguồn.
+
+Với Clean Code, khung ý đối chiếu [*Clean Code*, ấn bản 2](https://www.oreilly.com/library/view/clean-code-a/9780135398586/toc.xhtml), [*Refactoring*, ấn bản 2](https://martinfowler.com/books/refactoring.html) và [Google Engineering Practices](https://google.github.io/eng-practices/review/reviewer/looking-for.html):
+
+| Mốc | Ý cốt lõi |
+| --- | --- |
+| Tên và hàm | Tên bộc lộ ý định, từ vựng nhất quán, hợp đồng và trách nhiệm của hàm, tác dụng phụ, bình luận, định dạng. |
+| Độ phức tạp và lỗi | Luồng quyết định, kết quả và lỗi có nghĩa, dữ liệu và đối tượng, ranh giới phụ thuộc, test theo hành vi. |
+| Refactoring | Module có trọng tâm, thiết kế đủ dùng, trùng lặp theo quy tắc, code smell, các phép refactor nhỏ, giữ hành vi và biết khi nào dừng. |
+
+Mỗi bản dịch tiếng Anh phải giữ cùng phạm vi ý và ví dụ với bản tiếng Việt. Phần nguồn trong bài dẫn đến tài liệu gốc để người đọc có thể đào sâu.
