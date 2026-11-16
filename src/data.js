@@ -1,3 +1,5 @@
+import { cleanCodeLessons } from './clean-code.js';
+
 export const domains = [
   { id: 'security', icon: '◇', eyebrow: 'NỀN TẢNG', title: 'Bảo mật', description: 'Nhận diện rủi ro và bảo vệ dữ liệu, quyền truy cập.', color: 'mint', stage: 'Bảo vệ từ thiết kế' },
   { id: 'clean_code', icon: '⌁', eyebrow: 'NỀN TẢNG', title: 'Clean Code', description: 'Viết mã rõ ý định, dễ sửa và kiểm chứng.', color: 'blue', stage: 'Làm rõ ý định' },
@@ -169,5 +171,7 @@ export function setContentLanguage(language) {
       ];
       node.takeaway = `You know what to ask before studying ${title.toLowerCase()} in depth.`;
     }
+    const lesson = cleanCodeLessons[node.id]?.[language];
+    if (lesson) Object.assign(node, lesson);
   });
 }
