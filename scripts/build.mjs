@@ -17,7 +17,8 @@ const designPatterns = readFileSync(join(root, 'src', 'design-patterns.js'), 'ut
 const backend = readFileSync(join(root, 'src', 'backend.js'), 'utf8').replace("from './senior-expansions.js'", expansionImport);
 const productLessons = readFileSync(join(root, 'src', 'product-lessons.js'), 'utf8');
 const aiLessons = readFileSync(join(root, 'src', 'ai-lessons.js'), 'utf8');
-const data = readFileSync(join(root, 'src', 'data.js'), 'utf8').replace("from './clean-code.js'", `from './clean-code.js?v=${hash(cleanCode)}'`).replace("from './security.js'", `from './security.js?v=${hash(security)}'`).replace("from './design-patterns.js'", `from './design-patterns.js?v=${hash(designPatterns)}'`).replace("from './backend.js'", `from './backend.js?v=${hash(backend)}'`).replace("from './product-lessons.js'", `from './product-lessons.js?v=${hash(productLessons)}'`).replace("from './ai-lessons.js'", `from './ai-lessons.js?v=${hash(aiLessons)}'`);
+const curriculumData = readFileSync(join(root, 'src', 'curriculum-data.js'), 'utf8');
+const data = readFileSync(join(root, 'src', 'data.js'), 'utf8').replace("from './clean-code.js'", `from './clean-code.js?v=${hash(cleanCode)}'`).replace("from './security.js'", `from './security.js?v=${hash(security)}'`).replace("from './design-patterns.js'", `from './design-patterns.js?v=${hash(designPatterns)}'`).replace("from './backend.js'", `from './backend.js?v=${hash(backend)}'`).replace("from './product-lessons.js'", `from './product-lessons.js?v=${hash(productLessons)}'`).replace("from './ai-lessons.js'", `from './ai-lessons.js?v=${hash(aiLessons)}'`).replace("from './curriculum-data.js'", `from './curriculum-data.js?v=${hash(curriculumData)}'`);
 const locale = readFileSync(join(root, 'src', 'locale.js'), 'utf8');
 const app = readFileSync(join(root, 'src', 'app.js'), 'utf8').replace("from './data.js'", `from './data.js?v=${hash(data)}'`).replace("from './locale.js'", `from './locale.js?v=${hash(locale)}'`);
 const html = readFileSync(join(root, 'index.html'), 'utf8')
@@ -27,6 +28,7 @@ writeFileSync(join(dist, 'index.html'), html);
 writeFileSync(join(dist, 'styles.css'), css);
 writeFileSync(join(dist, 'src', 'app.js'), app);
 writeFileSync(join(dist, 'src', 'data.js'), data);
+writeFileSync(join(dist, 'src', 'curriculum-data.js'), curriculumData);
 writeFileSync(join(dist, 'src', 'clean-code.js'), cleanCode);
 writeFileSync(join(dist, 'src', 'security.js'), security);
 writeFileSync(join(dist, 'src', 'design-patterns.js'), designPatterns);

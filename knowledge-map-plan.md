@@ -4,6 +4,8 @@
 
 > Cập nhật phạm vi: danh mục hiện hành gồm 17 lĩnh vực theo mục 3; website hỗ trợ tiếng Việt và tiếng Anh, dùng chung ID mốc và tiến độ giữa hai ngôn ngữ.
 
+> Taxonomy triển khai ngày 16/11/2026 đã được phân rã thành 382 mốc và các chặng con. Ma trận nguồn và phạm vi đối chiếu nằm tại [`curriculum-sources.md`](./curriculum-sources.md).
+
 ## 1. Mục tiêu và nguyên tắc
 
 Xây một bản đồ kiến thức lập trình, xây dựng sản phẩm và sử dụng AI. Người mới có thể đi từ nền tảng; người đã có kinh nghiệm có thể lướt qua phần quen thuộc và đào sâu chỗ cần thiết. Nội dung phải súc tích, dễ hiểu, đủ rộng, có nguồn chọn lọc và nêu được khi nào một kiến thức có ích, các đánh đổi, điều dễ hiểu sai.

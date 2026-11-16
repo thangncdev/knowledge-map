@@ -1,27 +1,41 @@
 # Danh mục biên tập đến cấp senior
 
-Roadmap chỉ dùng tên mốc và mô tả một câu. Bài chuyên sâu được viết từ các nguồn dưới đây theo đúng phạm vi của mốc; cấu trúc và độ dài không cố định. Dấu `✓` nghĩa là mốc đã có bài song ngữ, tình huống thực tế, cách kiểm chứng và nguồn trực tiếp. Danh mục này là bản kiểm kê để không bỏ sót kiến thức, không thay thế nội dung bài.
+Taxonomy hiện có **382 mốc trong 17 lĩnh vực**. Đây là khung kiểm kê nội dung và lộ trình học, không phải tuyên bố rằng đọc hết danh sách là đạt cấp senior. Năng lực senior còn cần kinh nghiệm thực hiện, ra quyết định trong ràng buộc thật, xử lý sự cố và nâng năng lực của nhóm.
 
-| Lĩnh vực | Các mốc cần có | Nguồn chính |
-| --- | --- | --- |
-| Bảo mật | ✓ Mô hình đe dọa; ✓ xác thực và phiên; ✓ phân quyền; ✓ đầu vào/đầu ra và API; ✓ secret/mật mã; ✓ chuỗi cung ứng; ✓ phát hiện/ứng phó; ✓ kiểm chứng rủi ro | [OWASP ASVS](https://asvs.owasp.org/), [OWASP Cheat Sheets](https://cheatsheetseries.owasp.org/), [OWASP API Security](https://api-security.owasp.org/), [NIST CSF](https://www.nist.gov/cyberframework) |
-| Clean Code | ✓ Tên/hàm; ✓ độ phức tạp/lỗi; ✓ refactoring; cần tách thêm bình luận/định dạng, test sạch, module/ranh giới khi biên tập lại | [Clean Code 2nd](https://www.oreilly.com/library/view/clean-code-a/9780135398586/toc.xhtml), [Refactoring 2nd](https://martinfowler.com/books/refactoring.html), [Google Engineering Practices](https://google.github.io/eng-practices/) |
-| Design Patterns | ✓ Bài toán và lực thiết kế; ✓ composition/DI; ✓ tạo lập; ✓ cấu trúc; ✓ hành vi; ✓ pattern ở ranh giới hệ thống; ✓ nhận diện áp dụng sai | [GoF contents](https://www.pearson.de/media/muster/toc/toc_9780321700742.pdf), [Fowler DI](https://martinfowler.com/articles/injection.html), [Pattern catalog](https://refactoring.guru/design-patterns/catalog) |
-| Backend & API | ✓ HTTP/hợp đồng; ✓ dữ liệu và lỗi API; ✓ auth; ✓ đồng thời/idempotency; ✓ cache; ✓ queue/job; ✓ rate limit; ✓ quan sát; ✓ hiệu năng và thay đổi tương thích | [RFC 9110](https://www.rfc-editor.org/rfc/rfc9110.html), [HTTP API guidelines](https://opensource.zalando.com/restful-api-guidelines/), [OpenTelemetry](https://opentelemetry.io/docs/) |
-| Dữ liệu | Mô hình; SQL; index/query plan; transaction/concurrency; migration; vận hành PostgreSQL; NoSQL; tìm kiếm; backup/restore | [PostgreSQL docs](https://www.postgresql.org/docs/current/), [MongoDB data modeling](https://www.mongodb.com/docs/manual/data-modeling/) |
-| DevOps & Cloud | Linux/shell; network/DNS/TLS; container; CI/CD; triển khai an toàn; IaC; cloud/IAM; Kubernetes; SLO/quan sát; incident/toil/chi phí | [Google SRE Workbook](https://sre.google/workbook/table-of-contents/), [Docker](https://docs.docker.com/), [Kubernetes](https://kubernetes.io/docs/), [AWS Well-Architected](https://aws.amazon.com/architecture/well-architected/) |
-| System Design | Yêu cầu và SLO; ước lượng tải; dữ liệu/cache; đồng bộ/bất đồng bộ; consistency; scale; failure/reliability; đánh đổi và kiểm chứng | [Google SRE books](https://sre.google/books/), [AWS Well-Architected](https://aws.amazon.com/architecture/well-architected/), [DDIA](https://dataintensive.net/) |
-| Software Architecture | Bối cảnh/ràng buộc; ranh giới; coupling/cohesion; mô hình C4; ADR; chất lượng hệ thống; tiến hóa kiến trúc | [C4](https://c4model.com/), [Fowler ADR](https://martinfowler.com/bliki/ArchitectureDecisionRecord.html), [SEI quality attributes](https://www.sei.cmu.edu/) |
-| Business Analysis | Stakeholder; khám phá vấn đề; elicitation; mô hình quy trình; yêu cầu; xác nhận; truy vết/thay đổi | [BABOK](https://www.iiba.org/career-resources/a-business-analysis-professionals-foundation-for-success/babok/), [IIBA standards](https://www.iiba.org/standards-and-resources/) |
-| Product Ownership | Product Goal; backlog; value/ordering; refinement/chia nhỏ; acceptance; Sprint và phối hợp; đo outcome | [Scrum Guide](https://scrumguides.org/scrum-guide.html), [Evidence-Based Management](https://www.scrum.org/resources/evidence-based-management-guide) |
-| Product Management | ✓ Xác định vấn đề và bằng chứng; người dùng/thị trường; discovery; chiến lược; định vị; mô hình giá trị; roadmap; metric; thử nghiệm/outcome | [Product Talk](https://www.producttalk.org/discovering-solutions/), [NN/g research](https://www.nngroup.com/articles/which-ux-research-methods/), [Evidence-Based Management](https://www.scrum.org/resources/online-evidence-based-management-guide) |
-| Project Management | Mục tiêu/phạm vi; kế hoạch và phụ thuộc; ước lượng; nguồn lực; rủi ro; giao tiếp; theo dõi/điều chỉnh; đóng và học | [PMI standards](https://www.pmi.org/standards), [PMBOK](https://www.pmi.org/pmbok-guide-standards/foundational/pmbok) |
-| UX | Nghiên cứu; tác vụ và journey; kiến trúc thông tin; interaction; prototype; usability testing; accessibility | [NN/g](https://www.nngroup.com/articles/ux-basics-study-guide/), [W3C WAI](https://www.w3.org/WAI/tutorials/) |
-| UI | Phân cấp thị giác; bố cục; typography; màu/contrast; trạng thái/phản hồi; responsive; component/design system | [Material Design](https://m3.material.io/), [USWDS](https://designsystem.digital.gov/), [WCAG](https://www.w3.org/TR/WCAG22/) |
-| Nền tảng và vận hành AI | ✓ Model/token/context và giới hạn; chọn model/công cụ; prompting; RAG/tri thức; AI coding; agent; multi-agent; MCP/plugin/skill; automation; eval; quyền/bảo mật; chi phí/giám sát | [Google LLM](https://developers.google.com/machine-learning/crash-course/llm), [MCP](https://modelcontextprotocol.io/), [NIST GenAI Profile](https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-generative-artificial-intelligence) |
-| AI theo vai trò | Developer; QA; BA; PO; Product Manager; Project Manager; UX/UI; DevOps/Architect | Nguồn theo từng vai trò và tài liệu AI gốc bên trên |
-| Năng lực senior | Làm rõ mơ hồ; viết; phản biện; quyết định; mentoring; phối hợp; dẫn dắt thay đổi; ứng phó sự cố | [Google Engineering Practices](https://google.github.io/eng-practices/), [Google SRE Workbook](https://sre.google/workbook/table-of-contents/), [StaffEng](https://staffeng.com/guides/) |
+Trạng thái hiện tại: **29 bài chuyên sâu song ngữ**, **353 mốc toàn cảnh đang chờ biên soạn sâu**. Nguồn và cách đối chiếu được ghi tại [ma trận nguồn](./curriculum-sources.md). Taxonomy đầy đủ dùng bởi website nằm trong [`src/curriculum-data.js`](./src/curriculum-data.js).
 
-Một người senior không cần là chuyên gia sâu ở mọi lĩnh vực trong bảng. Tài liệu cần giúp họ nhận ra vấn đề, ra quyết định trong chuyên môn của mình và phối hợp đúng với chuyên gia ở lĩnh vực khác. Các bài gắn với sản phẩm hoặc tiêu chuẩn có thể thay đổi phải ghi ngày rà soát khi biên tập.
+| Lĩnh vực | Mốc | Các chặng |
+| --- | ---: | --- |
+| Bảo mật | 24 | Tư duy rủi ro; danh tính và truy cập; bảo mật ứng dụng; dữ liệu và mật mã; phát triển an toàn; vận hành; quản trị và kiểm chứng |
+| Clean Code | 16 | Đọc và hiểu mã; kiểm soát phức tạp; thiết kế module; cải tiến an toàn |
+| Design Patterns | 18 | Tư duy thiết kế; composition và phụ thuộc; khởi tạo; cấu trúc; hành vi; ranh giới hệ thống; ra quyết định |
+| Backend & API | 28 | Giao thức web; thiết kế API; danh tính; tính đúng; hiệu năng; xử lý bất đồng bộ; độ tin cậy; vận hành; tiến hóa API; kiến trúc dịch vụ |
+| Dữ liệu | 24 | Mô hình hóa; quan hệ và SQL; truy vấn/hiệu năng; transaction; schema; vận hành; lựa chọn storage; dữ liệu dẫn xuất; governance; recovery |
+| DevOps & Cloud | 40 | Linux; mạng; container; software delivery; IaC; cloud; Kubernetes; reliability/observability; operations |
+| System Design | 24 | Định nghĩa bài toán; dữ liệu và trạng thái; giao tiếp; hệ phân tán; khả năng mở rộng; độ tin cậy; ra quyết định |
+| Software Architecture | 22 | Bối cảnh; ranh giới; module; tích hợp; mô tả kiến trúc; quyết định; chất lượng; tiến hóa |
+| Business Analysis | 20 | Lập kế hoạch; hiện trạng; elicitation; mô hình hóa; đặc tả; xác nhận; vòng đời yêu cầu; chiến lược thay đổi |
+| Product Ownership | 18 | Định hướng; backlog; ưu tiên; refinement; chất lượng; phối hợp delivery; outcome; accountability |
+| Product Management | 22 | Discovery; chiến lược; kinh doanh; lập kế hoạch; đo lường; học từ thị trường; lãnh đạo sản phẩm |
+| Project Management | 20 | Khởi tạo; lập kế hoạch; nguồn lực; rủi ro; giao tiếp; kiểm soát; kết thúc |
+| UX | 20 | Nghiên cứu; mô hình trải nghiệm; cấu trúc; tương tác; prototype; đánh giá; accessibility; thực hành UX |
+| UI | 20 | Nền tảng thị giác; tương tác; accessibility; đa thiết bị; hệ thống giao diện; chất lượng giao diện |
+| Nền tảng và vận hành AI | 26 | Nền tảng model; context/prompt; chọn giải pháp; tri thức riêng; agent; tích hợp; workflow; eval; governance/risk |
+| AI theo vai trò | 16 | Kỹ thuật; phân tích; sản phẩm; điều phối; thiết kế; vận hành/kiến trúc; governance theo vai trò |
+| Năng lực senior | 24 | Giải quyết vấn đề; tư duy phản biện; quyết định; giao tiếp; phát triển người khác; phối hợp; dẫn dắt; vận hành |
 
-Mỗi bài song ngữ được biên tập theo nghĩa, ngữ cảnh nghề nghiệp và cách đọc tự nhiên của từng ngôn ngữ. Bản tiếng Việt không được tạo bằng cách dịch từng câu từ tiếng Anh; cần rà lại thuật ngữ, ví dụ, chủ ngữ và độ dài câu. Hai bản có thể khác cấu trúc câu nhưng phải tương đương về luận điểm, cảnh báo và bằng chứng.
+## Chuẩn của một bài chuyên sâu
+
+Một bài không bị ép theo số mục cố định. Nội dung phải đủ các ý phù hợp với chủ đề:
+
+- Khái niệm là gì, vì sao tồn tại và giải quyết vấn đề nào.
+- Cơ chế hoạt động và mô hình tinh thần cần có.
+- Khi nào áp dụng; dấu hiệu cho thấy chưa cần hoặc không phù hợp.
+- Các lựa chọn thay thế và trade-off về độ đúng, độ tin cậy, chi phí, vận hành và khả năng thay đổi.
+- Tình huống thực tế, failure mode, anti-pattern và cách chẩn đoán.
+- Cách triển khai hoặc ra quyết định theo từng bước.
+- Cách kiểm chứng bằng test, metric, quan sát hoặc review.
+- Câu hỏi một senior cần đặt ra và ranh giới trách nhiệm với chuyên gia khác.
+- Nguồn trực tiếp, ngày rà soát đối với nội dung thay đổi nhanh.
+
+Hai ngôn ngữ giữ cùng phạm vi ý, ví dụ và độ chính xác nhưng được biên tập độc lập. Bản tiếng Việt phải tự nhiên trong ngữ cảnh nghề nghiệp, dùng thuật ngữ nhất quán và không dịch máy từng câu từ tiếng Anh.

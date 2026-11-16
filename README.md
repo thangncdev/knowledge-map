@@ -20,7 +20,7 @@ Mở `http://localhost:4173`. Không cần cài package hay chạy build.
 
 ## Nội dung và tương tác mẫu
 
-- 17 lĩnh vực, 133 mốc theo danh mục hiện hành. Hai mươi chín bài đã có bản chuyên sâu song ngữ: Clean Code, Bảo mật, Design Patterns, Backend & API, bài xác định vấn đề sản phẩm và bài nền tảng LLM. 104 mốc còn lại là dàn ý, được kiểm kê trong [danh mục biên tập](./curriculum.md).
+- 17 lĩnh vực, 382 mốc trong taxonomy nhiều chặng. Hai mươi chín bài đã có bản chuyên sâu song ngữ; 353 mốc còn lại là khung biên tập. [Ma trận nguồn](./curriculum-sources.md) ghi rõ các tài liệu đã đối chiếu và phạm vi rút ra cho từng lĩnh vực.
 - Roadmap phân nhánh theo phong cách terminal: mở/thu từng lĩnh vực, mở toàn bộ, lọc nhóm, kéo/zoom và minimap. Đường liền biểu thị phân nhánh chủ đề; đường nét đứt thể hiện thứ tự tiền đề.
 - Chọn chủ đề để mở bảng xem nhanh, xem tiền đề và kiến thức liên quan, rồi đọc bài ngay trong web. Tiền đề được hiển thị như gợi ý; có thể đọc và tự đánh dấu phần đã biết.
 - Mỗi mốc trên map có mức ưu tiên Cốt lõi / Nên học / Mở rộng để định hướng; đây là phân loại biên tập ban đầu và có thể khai báo riêng bằng `importance` trong dữ liệu mốc. Màu theo nhóm lĩnh vực, còn hình và nhãn thể hiện trạng thái học.
@@ -30,7 +30,7 @@ Mở `http://localhost:4173`. Không cần cài package hay chạy build.
 - Giao diện và nội dung toàn cảnh có tiếng Việt, tiếng Anh; nút EN/VI ghi nhớ lựa chọn trên trình duyệt. Tiến độ dùng cùng ID ở cả hai ngôn ngữ.
 - Thanh điều hướng có cây lĩnh vực và chủ đề mở theo từng cấp, có thể ẩn trên desktop. Trang bài học có dark/light mode, nút đánh dấu đã nắm và điều hướng bài trước/bài tiếp theo; các lựa chọn giao diện được ghi nhớ trên trình duyệt.
 
-Dữ liệu map ở [`src/data.js`](./src/data.js); nội dung bài ở [`src/security.js`](./src/security.js), [`src/clean-code.js`](./src/clean-code.js), [`src/design-patterns.js`](./src/design-patterns.js), [`src/backend.js`](./src/backend.js), [`src/product-lessons.js`](./src/product-lessons.js) và [`src/ai-lessons.js`](./src/ai-lessons.js). Các lĩnh vực khác hiện là nội dung toàn cảnh. Danh mục và trạng thái biên tập ở [`curriculum.md`](./curriculum.md); bài viết cần tiếp tục mở rộng và review chuyên môn trước khi coi là bản tham chiếu senior.
+Dữ liệu taxonomy ở [`src/curriculum-data.js`](./src/curriculum-data.js), dữ liệu map ở [`src/data.js`](./src/data.js); nội dung bài ở [`src/security.js`](./src/security.js), [`src/clean-code.js`](./src/clean-code.js), [`src/design-patterns.js`](./src/design-patterns.js), [`src/backend.js`](./src/backend.js), [`src/product-lessons.js`](./src/product-lessons.js) và [`src/ai-lessons.js`](./src/ai-lessons.js). Các lĩnh vực khác hiện là nội dung toàn cảnh. Danh mục và trạng thái biên tập ở [`curriculum.md`](./curriculum.md); bài viết cần tiếp tục mở rộng và review chuyên môn trước khi coi là bản tham chiếu senior.
 
 ## Chuẩn biên soạn bài chuyên sâu
 

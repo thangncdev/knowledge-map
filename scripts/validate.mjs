@@ -13,12 +13,16 @@ for (const node of nodes) {
   if (!domainIds.has(node.domain)) errors.push(`${node.id}: domain không tồn tại (${node.domain})`);
   if (!Number.isInteger(node.order) || node.order < 1) errors.push(`${node.id}: order không hợp lệ`);
   if (!node.title?.trim() || !node.summary?.trim() || !node.takeaway?.trim()) errors.push(`${node.id}: thiếu nội dung cơ bản`);
+  if (!node.group?.trim()) errors.push(`${node.id}: thiếu chặng kiến thức`);
   if (!Array.isArray(node.sections) || node.sections.length === 0 || node.sections.some(section => section.length !== 2 || !section[0]?.trim() || !section[1]?.trim())) errors.push(`${node.id}: sections không hợp lệ`);
 }
 
 for (const domain of domains) {
-  const orders = nodes.filter(node => node.domain === domain.id).map(node => node.order);
+  const domainNodes = nodes.filter(node => node.domain === domain.id);
+  const orders = domainNodes.map(node => node.order);
   if (new Set(orders).size !== orders.length) errors.push(`${domain.id}: order bị trùng`);
+  if (domainNodes.length < 15) errors.push(`${domain.id}: taxonomy quá mỏng (${domainNodes.length} mốc)`);
+  if (new Set(domainNodes.map(node => node.title)).size !== domainNodes.length) errors.push(`${domain.id}: tiêu đề mốc bị trùng`);
 }
 
 for (const node of nodes) {
@@ -47,6 +51,7 @@ const vietnameseLessons = new Map(nodes.filter(node => node.contentStatus !== 'o
   sections: node.sections.map(([heading, body]) => [heading, body]),
 }]));
 setContentLanguage('en');
+for (const node of nodes) if (!node.title?.trim() || !node.group?.trim()) errors.push(`${node.id}: taxonomy tiếng Anh thiếu tiêu đề hoặc chặng`);
 for (const node of nodes.filter(node => node.contentStatus !== 'outline')) {
   const vi = vietnameseLessons.get(node.id);
   if (!vi) { errors.push(`${node.id}: thiếu bản tiếng Việt`); continue; }
