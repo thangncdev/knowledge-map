@@ -23,7 +23,8 @@ Mở `http://localhost:4173`. Không cần cài package hay chạy build.
 - 17 lĩnh vực, 60 mốc theo danh mục hiện hành; tám bài Bảo mật, ba bài Clean Code và bảy bài Design Patterns đã có nội dung chuyên sâu bằng tiếng Việt và tiếng Anh. Các mốc còn lại ở mức định hướng, được kiểm kê trong [danh mục biên tập](./curriculum.md).
 - Roadmap phân nhánh theo phong cách terminal: mở/thu từng lĩnh vực, mở toàn bộ, lọc nhóm, kéo/zoom và minimap. Đường liền biểu thị phân nhánh chủ đề; đường nét đứt thể hiện thứ tự tiền đề.
 - Chọn chủ đề để mở bảng xem nhanh, xem tiền đề và kiến thức liên quan, rồi đọc bài ngay trong web. Tiền đề được hiển thị như gợi ý; có thể đọc và tự đánh dấu phần đã biết.
-- Tự đánh dấu tiến độ đang học / đã nắm. Tiến độ lưu bằng `localStorage`, có xuất / nhập JSON kèm bước xem trước.
+- Mỗi mốc trên map có mức ưu tiên Cốt lõi / Nên học / Mở rộng để định hướng; đây là phân loại biên tập ban đầu và có thể khai báo riêng bằng `importance` trong dữ liệu mốc. Màu theo nhóm lĩnh vực, còn hình và nhãn thể hiện trạng thái học.
+- Trong DOC_PREVIEW có thể đánh dấu Đã học, Bỏ qua hoặc bỏ đánh dấu; bấm ra ngoài để đóng và chọn mốc khác để mở lại. Tiến độ lưu bằng `localStorage`, có xuất / nhập JSON kèm bước xem trước.
 - Tìm kiếm bằng Ctrl/Cmd + K, hỗ trợ tìm tiếng Việt không dấu và định vị chủ đề trên bản đồ. Quay lại từ bài học giữ vị trí và nhánh đang mở.
 - Giao diện có menu mobile và điều khiển bản đồ bằng bàn phím. Bài học có mục lục, bài liên quan và gợi ý tự đào sâu. Bài API minh họa thêm luồng xử lý, request/response và tình huống thực hành.
 - Giao diện và nội dung toàn cảnh có tiếng Việt, tiếng Anh; nút EN/VI ghi nhớ lựa chọn trên trình duyệt. Tiến độ dùng cùng ID ở cả hai ngôn ngữ.

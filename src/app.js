@@ -69,9 +69,10 @@ const groups = [
   { id: 'collaboration', title: 'Năng lực phối hợp', en: 'Working together', ids: ['senior'] },
 ];
 const tr = (vi,en) => state.language === 'en' ? en : vi;
-const optionalTopics = new Set(['design_patterns.3','ui.3','ux.3','project.3','ai_roles.3','security.7','security.8']);
+const optionalTopics = new Set(['design_patterns.3','ui.3','ux.3','project.3','ai_roles.3']);
 const coreDomains = new Set(['security','clean_code','backend','data','product','ai']);
 function importance(node) {
+  if (['core','recommended','optional'].includes(node.importance)) return node.importance;
   if (optionalTopics.has(node.id)) return 'optional';
   return node.order === 1 || (coreDomains.has(node.domain) && node.order === 2) ? 'core' : 'recommended';
 }
@@ -87,7 +88,7 @@ function shell(content) {
       <nav class="side-nav">${groups.map(g=>`<div class="explorer-group"><button class="explorer-heading ${state.filter === g.id ? 'selected' : ''}" data-filter="${g.id}"><span>⌄</span> ${tr(g.title,g.en)} <small>${g.ids.length}</small></button>${g.ids.map(id=>`<button data-domain="${id}" class="side-link ${state.domain === id ? 'active' : ''}"><span class="tree-branch">├</span><span>${domainById[id].title}</span><small>${completed(id)}/${domainNodes(id).length}</small></button>`).join('')}</div>`).join('')}</nav>
       <div class="side-bottom"><div class="side-progress-label"><span>LEARNING_PROGRESS</span><strong>${completed()}/${nodes.length}</strong></div><div class="progress-track"><span style="width:${completed()/nodes.length*100}%"></span></div><p>Tiến độ lưu trên trình duyệt của bạn.</p><button class="side-transfer" data-panel="transfer">${icon('download',15)} Export / Import</button></div>
     </aside>${state.mobileNav ? '<button class="mobile-scrim" data-action="mobile-nav" aria-label="Đóng menu"></button>' : ''}
-    <div class="main-column"><header class="topbar"><button class="mobile-menu icon-button" data-action="mobile-nav" aria-label="Mở menu" aria-expanded="${state.mobileNav}">${icon('menu')}</button><div class="topbar-path"><span class="prompt-char">~</span><button data-nav="overview">knowledge</button><span class="slash">/</span><strong>${state.view === 'lesson' ? 'docs / '+escapeHtml(state.node) : 'roadmap'}</strong></div><div class="topbar-right"><button class="search-trigger" data-action="search" aria-label="${tr('Tìm kiến thức','Search knowledge')}">${icon('list',14)} <span>${tr('Tìm kiến thức…','Find knowledge…')}</span><kbd>⌘ K</kbd></button><button class="language-switch" data-action="language">${state.language === 'vi' ? 'EN' : 'VI'}</button><span class="prototype-pill">PREVIEW / V0.2</span></div></header><main id="main-content">${content}</main></div>${state.panel ? panel() : ''}</div>`;
+    <div class="main-column"><header class="topbar"><button class="mobile-menu icon-button" data-action="mobile-nav" aria-label="Mở menu" aria-expanded="${state.mobileNav}">${icon('menu')}</button><div class="topbar-path"><span class="prompt-char">~</span><button data-nav="overview">knowledge</button><span class="slash">/</span><strong>${state.view === 'lesson' ? 'docs / '+escapeHtml(state.node) : 'roadmap'}</strong></div><div class="topbar-right"><button class="search-trigger" data-action="search" aria-label="${tr('Tìm kiến thức','Search knowledge')}">${icon('list',14)} <span>${tr('Tìm kiến thức…','Find knowledge…')}</span><kbd>⌘ K</kbd></button><button class="language-switch" data-action="language">${state.language === 'vi' ? 'EN' : 'VI'}</button><span class="prototype-pill">PREVIEW / V0.3</span></div></header><main id="main-content">${content}</main></div>${state.panel ? panel() : ''}</div>`;
 }
 function buildGraph() {
   const items = [], lines = [];
