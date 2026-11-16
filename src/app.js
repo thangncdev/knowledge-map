@@ -11,7 +11,7 @@ function loadProgress() {
   try {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
     if (saved.schemaVersion !== 1 || typeof saved.nodes !== 'object' || !saved.nodes) return {};
-    return Object.fromEntries(Object.entries(saved.nodes).filter(([id, entry]) => nodeById[id] && ['in_progress', 'mastered'].includes(entry?.status)));
+    return Object.fromEntries(Object.entries(saved.nodes).filter(([id, entry]) => nodeById[id] && ['in_progress', 'mastered', 'skipped'].includes(entry?.status)));
   } catch { return {}; }
 }
 function persist() { localStorage.setItem(STORAGE_KEY, JSON.stringify({ schemaVersion: 1, nodes: state.progress })); }
@@ -22,9 +22,14 @@ function status(node) {
   return state.progress[node.id]?.status || 'available';
 }
 function completed(domainId) { return nodes.filter(n => !domainId || n.domain === domainId).filter(n => status(n) === 'mastered').length; }
+function skipped(domainId) { return nodes.filter(n => !domainId || n.domain === domainId).filter(n => status(n) === 'skipped').length; }
 function escapeHtml(value) { return String(value).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' })[c]); }
 function domainNodes(id) { return nodes.filter(node => node.domain === id).sort((a,b) => a.order - b.order); }
 function navigate(view, id) {
+  if (view === 'lesson' && nodeById[id] && nodeById[id].contentStatus !== 'full') {
+    state.selected = id;
+    return navigate('domain', nodeById[id].domain);
+  }
   state.view = view;
   state.domain = view === 'domain' ? id : view === 'lesson' ? nodeById[id]?.domain : null;
   state.node = view === 'lesson' ? id : null;
@@ -43,7 +48,7 @@ function syncHash() {
 }
 function badge(node) {
   const s = status(node);
-  return `<span class="status status-${s}"><span class="status-dot"></span>${{ locked:'Nên học tiền đề', available:'Sẵn sàng', in_progress:'Đang học', mastered:'Đã nắm' }[s]}</span>`;
+  return `<span class="status status-${s}"><span class="status-dot"></span>${tr(...({ locked:['Chưa học · có tiền đề','Not started · prerequisites'], available:['Chưa học','Not started'], in_progress:['Đang học','In progress'], mastered:['Đã học','Completed'], skipped:['Đã bỏ qua','Skipped'] }[s]))}</span>`;
 }
 function icon(name, size = 20) {
   const paths = {
@@ -64,6 +69,14 @@ const groups = [
   { id: 'collaboration', title: 'Năng lực phối hợp', en: 'Working together', ids: ['senior'] },
 ];
 const tr = (vi,en) => state.language === 'en' ? en : vi;
+const optionalTopics = new Set(['design_patterns.3','ui.3','ux.3','project.3','ai_roles.3','security.7','security.8']);
+const coreDomains = new Set(['security','clean_code','backend','data','product','ai']);
+function importance(node) {
+  if (optionalTopics.has(node.id)) return 'optional';
+  return node.order === 1 || (coreDomains.has(node.domain) && node.order === 2) ? 'core' : 'recommended';
+}
+function groupForDomain(id) { return groups.find(group => group.ids.includes(id))?.id || 'foundation'; }
+function importanceLabel(value) { return tr(...({ core:['Cốt lõi','Core'], recommended:['Nên học','Recommended'], optional:['Mở rộng','Optional'] }[value])); }
 let graph = { width: 1440, height: 1600, items: [], lines: [] };
 function shell(content) {
   return `<div class="app-shell ${state.view !== 'lesson' ? 'map-shell' : ''}">
@@ -85,14 +98,15 @@ function buildGraph() {
   groups.filter(g=>state.filter==='all'||state.filter===g.id).forEach((g,gi)=>{
     addLine(80,previous,80,y+21); addLine(80,y+21,555,y+21);
     items.push({kind:'group',id:g.id,x:555,y,w:330,h:42,index:groups.indexOf(g)});
-    let rowY=y+90;
+    let rowY=y+90, previousRowHeight=105;
     for(let offset=0;offset<g.ids.length;offset+=3) {
       const row=g.ids.slice(offset,offset+3);
       const positions=row.length===1?[720]:row.length===2?[505,935]:[290,720,1150];
-      const hasExpanded=row.some(id=>state.expanded.has(id));
+      const expandedCount=Math.max(0,...row.filter(id=>state.expanded.has(id)).map(id=>domainNodes(id).length));
+      const rowHeight=expandedCount ? 91+expandedCount*67+22 : 105;
       const busY=rowY-25;
       if(offset===0) addLine(720,y+42,720,busY);
-      else addLine(80,rowY-(hasPreviousExpanded?300:105)+64,80,busY);
+      else addLine(80,rowY-previousRowHeight+64,80,busY);
       if(offset>0) addLine(80,busY,positions[0],busY);
       if(row.length>1) addLine(positions[0],busY,positions.at(-1),busY);
       row.forEach((id,j)=>{
@@ -111,8 +125,8 @@ function buildGraph() {
         }
       });
       if(offset===0 && g.ids.length>3) {addLine(positions[0],busY,80,busY);addLine(80,busY,80,rowY+64);}
-      var hasPreviousExpanded=hasExpanded;
-      rowY+=hasExpanded?300:105;
+      previousRowHeight=rowHeight;
+      rowY+=rowHeight;
     }
     previous=y+21;
     y=rowY+70;
@@ -128,7 +142,7 @@ function roadmapView() {
       <div class="map-controls"><button data-action="zoom-out" aria-label="${tr('Thu nhỏ','Zoom out')}">−</button><span id="zoom-value">${Math.round(state.map.zoom*100)}%</span><button data-action="zoom-in" aria-label="${tr('Phóng to','Zoom in')}">+</button><i></i><button data-action="fit" aria-label="${tr('Xem toàn cảnh','Fit overview')}">${icon('grid',16)}</button><button data-action="reset-map" aria-label="${tr('Về điểm bắt đầu','Back to start')}">↖</button></div>
       <button class="minimap" data-action="minimap" aria-label="${tr('Di chuyển trên bản đồ thu nhỏ','Navigate minimap')}"><svg viewBox="0 0 ${graph.width} ${graph.height}" aria-hidden="true">${graph.items.map(n=>`<rect x="${n.x}" y="${n.y}" width="${n.w}" height="${n.h}" class="mini-${n.kind}"/>`).join('')}<rect id="mini-window" x="0" y="0" width="800" height="600"/></svg></button>
       ${selected ? inspector(selected) : ''}
-    </div><footer class="map-statusbar"><div><span class="legend-line-sample"></span>${tr('Phân nhánh chủ đề','Topic hierarchy')}<span class="legend-line-sample dashed"></span>${tr('Nên học trước','Learn first')}</div><span><i class="status-dot"></i> ${tr('Nội dung mẫu để duyệt giao diện','Sample content for design review')}</span><span>${completed()}/${nodes.length} ${tr('đã nắm','mastered')}</span></footer></div>`;
+    </div><footer class="map-statusbar"><div class="map-legend"><span><i class="legend-icon done">✓</i>${tr('Đã học','Completed')}</span><span><i class="legend-icon active">◐</i>${tr('Đang học','In progress')}</span><span><i class="legend-icon todo">○</i>${tr('Chưa học','Not started')}</span><span><i class="legend-icon skip">↷</i>${tr('Bỏ qua','Skipped')}</span><span class="legend-importance">★ ${tr('Cốt lõi','Core')} · ◇ ${tr('Nên học','Recommended')} · + ${tr('Mở rộng','Optional')}</span></div><span>${completed()}/${nodes.length} ${tr('đã học','completed')} · ${skipped()} ${tr('bỏ qua','skipped')}</span></footer></div>`;
 }
 function graphMarkup() {
   const selected=nodeById[state.selected];
@@ -136,14 +150,21 @@ function graphMarkup() {
   return `<svg class="graph-edges" width="${graph.width}" height="${graph.height}" aria-hidden="true">${graph.lines.map(l=>`<line x1="${l.x1}" y1="${l.y1}" x2="${l.x2}" y2="${l.y2}" class="edge-${l.kind}"/>`).join('')}</svg>${graph.items.map(item=>{
     const style=`left:${item.x}px;top:${item.y}px;width:${item.w}px;height:${item.h}px`;
     if(item.kind==='root') return `<div class="graph-root" style="${style}"><span>&gt;_</span><div>knowledge.map<small>${tr('HỆ THỐNG TRI THỨC CÁ NHÂN','PERSONAL KNOWLEDGE SYSTEM')}</small></div></div>`;
-    if(item.kind==='group') {const g=groups.find(g=>g.id===item.id);return `<div class="graph-group" style="${style}"><span>0${item.index+1}</span>${tr(g.title,g.en)}</div>`;}
-    if(item.kind==='domain') {const d=domainById[item.id];return `<button class="graph-domain ${state.expanded.has(d.id)?'expanded':''} ${state.domain===d.id?'focused':''}" data-expand="${d.id}" aria-expanded="${state.expanded.has(d.id)}" style="${style}"><span class="graph-folder">${state.expanded.has(d.id)?'−':'+'}</span><span class="graph-domain-copy"><strong>${d.title}</strong><small>${domainNodes(d.id).length} ${tr('chủ đề','topics')} <span>· ${completed(d.id)} ${tr('đã nắm','mastered')}</span></small></span><span class="graph-domain-arrow">${state.expanded.has(d.id)?'⌃':'⌄'}</span></button>`;}
-    const n=nodeById[item.id],s=status(n);
-    return `<button class="graph-topic ${state.selected===n.id?'selected':''} ${related.has(n.id)?'related':''} ${s}" data-select="${n.id}" style="${style}" aria-pressed="${state.selected===n.id}"><span class="topic-status">${s==='mastered'?'✓':s==='in_progress'?'◐':'○'}</span><span>${escapeHtml(n.title)}</span><small>↗</small></button>`;
+    if(item.kind==='group') {const g=groups.find(g=>g.id===item.id);return `<div class="graph-group group-${g.id}" style="${style}"><span>0${item.index+1}</span>${tr(g.title,g.en)}</div>`;}
+    if(item.kind==='domain') {const d=domainById[item.id],done=completed(d.id),total=domainNodes(d.id).length;return `<button class="graph-domain group-${groupForDomain(d.id)} ${state.expanded.has(d.id)?'expanded':''} ${state.domain===d.id?'focused':''}" data-expand="${d.id}" aria-expanded="${state.expanded.has(d.id)}" style="${style}"><span class="graph-folder">${state.expanded.has(d.id)?'−':'+'}</span><span class="graph-domain-copy"><strong>${d.title}</strong><small>${total} ${tr('chủ đề','topics')} <span>· ${done}/${total} ${tr('đã học','completed')}</span></small><span class="domain-completion" aria-hidden="true"><i style="width:${done/total*100}%"></i></span></span><span class="graph-domain-arrow">${state.expanded.has(d.id)?'⌃':'⌄'}</span></button>`;}
+    const n=nodeById[item.id],s=status(n),priority=importance(n);
+    const symbol={mastered:'✓',in_progress:'◐',skipped:'↷',locked:'○',available:'○'}[s];
+    const stateLabel=tr(...({mastered:['Đã học','Completed'],in_progress:['Đang học','In progress'],skipped:['Đã bỏ qua','Skipped'],locked:['Chưa học','Not started'],available:['Chưa học','Not started']}[s]));
+    return `<button class="graph-topic group-${groupForDomain(n.domain)} importance-${priority} ${state.selected===n.id?'selected':''} ${related.has(n.id)?'related':''} ${s}" data-select="${n.id}" style="${style}" aria-label="${escapeHtml(n.title)} · ${importanceLabel(priority)} · ${stateLabel}" aria-pressed="${state.selected===n.id}"><span class="topic-status" aria-hidden="true">${symbol}</span><span>${escapeHtml(n.title)}</span><small class="importance-mark" aria-hidden="true">${{core:'★',recommended:'◇',optional:'+'}[priority]}</small></button>`;
   }).join('')}`;
 }
+function inspectorReadAction(n) {
+  if (n.contentStatus !== 'full') return `<p class="inspector-footnote">${tr('Đây là mốc định hướng ngắn. Bài chuyên sâu đang được biên soạn từ nguồn gốc.','This is a short roadmap milestone. The full source-based lesson is being written.')}</p>`;
+  return `<button class="primary-button read-topic" data-read="${n.id}">${tr('Đọc bài chuyên sâu','Read the full lesson')} ${icon('arrow',17)}</button><p class="inspector-footnote">${tr('Bài viết mở ngay trong Knowledge Map.','Read right here in Knowledge Map.')}</p>`;
+}
 function inspector(n) {
-  return `<aside class="node-inspector" aria-label="${tr('Xem nhanh chủ đề','Topic preview')}"><div class="inspector-top"><span>DOC_PREVIEW</span><button data-action="close-inspector" aria-label="${tr('Đóng','Close')}">${icon('close',16)}</button></div><div class="inspector-body"><div class="inspector-id">${n.id}</div><h2>${n.title}</h2><p>${n.summary}</p><div class="inspector-meta">${badge(n)}<span>${n.duration}</span></div><div class="inspector-section"><h3>${tr('Bạn sẽ hiểu được','What you will understand')}</h3><p>${n.takeaway}</p></div><div class="inspector-section"><h3>${tr('Nên học trước','Learn first')}</h3>${n.prerequisites.length?n.prerequisites.map(id=>`<button data-jump="${id}"><span>${state.progress[id]?.status==='mastered'?'✓':'○'}</span>${nodeById[id].title} ↗</button>`).join(''):`<p>${tr('Có thể bắt đầu tại đây.','Start here. No prerequisites.')}</p>`}</div>${n.related.length?`<div class="inspector-section"><h3>${tr('Kiến thức liên quan','Related knowledge')}</h3>${n.related.map(id=>`<button data-jump="${id}">${nodeById[id].title} ↗</button>`).join('')}</div>`:''}<button class="primary-button read-topic" data-read="${n.id}">${tr('Đọc bài chuyên sâu','Read the full lesson')} ${icon('arrow',17)}</button><p class="inspector-footnote">${tr('Bài viết mở ngay trong Knowledge Map.','Read right here in Knowledge Map.')}</p></div></aside>`;
+  const priority=importance(n),s=status(n);
+  return `<aside class="node-inspector group-${groupForDomain(n.domain)}" aria-label="${tr('Xem nhanh chủ đề','Topic preview')}"><div class="inspector-top"><span>DOC_PREVIEW / ${escapeHtml(n.domain.toUpperCase())}</span><button data-action="close-inspector" aria-label="${tr('Đóng','Close')}">${icon('close',16)}</button></div><div class="inspector-body"><div class="inspector-id">${n.id}</div><h2>${n.title}</h2><p>${n.summary}</p><div class="inspector-tags"><span class="importance-tag importance-${priority}">${{core:'★',recommended:'◇',optional:'+'}[priority]} ${importanceLabel(priority)}</span>${badge(n)}<span class="inspector-duration">${n.duration}</span></div><div class="inspector-progress"><span>${tr('TIẾN ĐỘ CỦA BẠN','YOUR PROGRESS')}</span><div><button type="button" data-progress="mastered" aria-pressed="${s==='mastered'}">✓ ${tr('Đã học','Completed')}</button><button type="button" data-progress="skipped" aria-pressed="${s==='skipped'}">↷ ${tr('Bỏ qua','Skip')}</button>${['mastered','skipped','in_progress'].includes(s)?`<button type="button" data-progress="clear" aria-label="${tr('Bỏ đánh dấu tiến độ','Clear progress')}">↺</button>`:''}</div></div><div class="inspector-section"><h3>${tr('Bạn sẽ hiểu được','What you will understand')}</h3><p>${n.takeaway}</p></div><div class="inspector-section"><h3>${tr('Nên học trước','Learn first')}</h3>${n.prerequisites.length?n.prerequisites.map(id=>`<button data-jump="${id}"><span>${state.progress[id]?.status==='mastered'?'✓':'○'}</span>${nodeById[id].title} ↗</button>`).join(''):`<p>${tr('Có thể bắt đầu tại đây.','Start here. No prerequisites.')}</p>`}</div>${n.related.length?`<div class="inspector-section"><h3>${tr('Kiến thức liên quan','Related knowledge')}</h3>${n.related.map(id=>`<button data-jump="${id}">${nodeById[id].title} ↗</button>`).join('')}</div>`:''}${inspectorReadAction(n)}</div></aside>`;
 }
 function sectionBody(body) { return /^\s*<(?:p|pre|ul|ol|div)\b/i.test(body) ? body : `<p>${body}</p>`; }
 function lessonView() {
@@ -189,7 +210,7 @@ async function previewImport(file) {
   try {
     const raw = JSON.parse(await file.text());
     if (raw.schemaVersion !== 1 || !raw.nodes || typeof raw.nodes !== 'object' || Array.isArray(raw.nodes)) throw new Error('File JSON không đúng định dạng tiến độ phiên bản 1.');
-    const valid = Object.entries(raw.nodes).filter(([id, entry]) => nodeById[id] && ['in_progress','mastered'].includes(entry?.status));
+    const valid = Object.entries(raw.nodes).filter(([id, entry]) => nodeById[id] && ['in_progress','mastered','skipped'].includes(entry?.status));
     const mastered = valid.filter(([,entry])=>entry.status==='mastered').length;
     const unknown = Object.keys(raw.nodes).length-valid.length;
     target.innerHTML = `<div class="import-preview"><strong>Tìm thấy ${valid.length} mốc hợp lệ</strong><p>${mastered} mốc đã nắm${unknown ? ` · ${unknown} mục không hợp lệ hoặc không còn trong bản đồ sẽ được bỏ qua` : ''}. Nhập sẽ thay thế tiến độ hiện tại.</p><button class="primary-button" data-action="confirm-import">Xác nhận nhập</button></div>`;
@@ -200,9 +221,11 @@ async function previewImport(file) {
 app.addEventListener('click', event => {
   const sectionLink = event.target.closest('a[href^="#section-"]');
   if (sectionLink) { event.preventDefault(); document.querySelector(sectionLink.getAttribute('href'))?.scrollIntoView({behavior:'smooth',block:'start'}); return; }
-  const target = event.target.closest('[data-nav],[data-domain],[data-node],[data-panel],[data-action],[data-close],[data-expand],[data-select],[data-filter],[data-jump],[data-read]'); if (!target) return;
+  const target = event.target.closest('[data-nav],[data-domain],[data-node],[data-panel],[data-action],[data-close],[data-expand],[data-select],[data-filter],[data-jump],[data-read],[data-progress]');
+  if (!target) { if(state.selected && !event.target.closest('.node-inspector')) { state.selected=null; renderKeepingMap(); } return; }
   if (target.dataset.expand) { state.expanded.has(target.dataset.expand)?state.expanded.delete(target.dataset.expand):state.expanded.add(target.dataset.expand); return renderKeepingMap(); }
   if (target.dataset.select) { state.selected=target.dataset.select; return renderKeepingMap(); }
+  if (target.dataset.progress) { const value=target.dataset.progress; return setStatus(state.selected,value==='clear'?null:value); }
   if (target.dataset.filter) { state.filter=target.dataset.filter; state.selected=null; state.mapReady=false; return navigate('overview'); }
   if (target.dataset.jump) return jumpToNode(target.dataset.jump);
   if (target.dataset.read) return navigate('lesson',target.dataset.read);

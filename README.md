@@ -20,7 +20,7 @@ Mở `http://localhost:4173`. Không cần cài package hay chạy build.
 
 ## Nội dung và tương tác mẫu
 
-- 17 lĩnh vực, 51 mốc theo danh mục hiện hành; ba mốc Clean Code đã có bài đầy đủ bằng tiếng Việt và tiếng Anh, các mốc còn lại ở mức toàn cảnh.
+- 17 lĩnh vực, 60 mốc theo danh mục hiện hành; tám bài Bảo mật, ba bài Clean Code và bảy bài Design Patterns đã có nội dung chuyên sâu bằng tiếng Việt và tiếng Anh. Các mốc còn lại ở mức định hướng, được kiểm kê trong [danh mục biên tập](./curriculum.md).
 - Roadmap phân nhánh theo phong cách terminal: mở/thu từng lĩnh vực, mở toàn bộ, lọc nhóm, kéo/zoom và minimap. Đường liền biểu thị phân nhánh chủ đề; đường nét đứt thể hiện thứ tự tiền đề.
 - Chọn chủ đề để mở bảng xem nhanh, xem tiền đề và kiến thức liên quan, rồi đọc bài ngay trong web. Tiền đề được hiển thị như gợi ý; có thể đọc và tự đánh dấu phần đã biết.
 - Tự đánh dấu tiến độ đang học / đã nắm. Tiến độ lưu bằng `localStorage`, có xuất / nhập JSON kèm bước xem trước.
@@ -28,11 +28,11 @@ Mở `http://localhost:4173`. Không cần cài package hay chạy build.
 - Giao diện có menu mobile và điều khiển bản đồ bằng bàn phím. Bài học có mục lục, bài liên quan và gợi ý tự đào sâu. Bài API minh họa thêm luồng xử lý, request/response và tình huống thực hành.
 - Giao diện và nội dung toàn cảnh có tiếng Việt, tiếng Anh; nút EN/VI ghi nhớ lựa chọn trên trình duyệt. Tiến độ dùng cùng ID ở cả hai ngôn ngữ.
 
-Dữ liệu map ở [`src/data.js`](./src/data.js); bài mẫu Clean Code ở [`src/clean-code.js`](./src/clean-code.js). Các lĩnh vực khác hiện là nội dung toàn cảnh để chọn hướng đào sâu. Bài Clean Code đã gắn nguồn chọn lọc, nhưng vẫn cần review biên tập trước khi coi là bản cuối.
+Dữ liệu map ở [`src/data.js`](./src/data.js); bài chuyên sâu ở [`src/security.js`](./src/security.js), [`src/clean-code.js`](./src/clean-code.js) và [`src/design-patterns.js`](./src/design-patterns.js). Các lĩnh vực khác hiện là nội dung toàn cảnh. Danh mục và trạng thái biên tập ở [`curriculum.md`](./curriculum.md); bài viết vẫn cần review của người có chuyên môn trước khi coi là bản tham chiếu cuối.
 
 ## Chuẩn biên soạn bài chuyên sâu
 
-Mỗi lĩnh vực bắt đầu từ 1–3 tài liệu gốc hoặc tài liệu được cộng đồng sử dụng rộng rãi. Lập danh mục các ý cốt lõi từ mục lục và nội dung nguồn trước khi viết. Mỗi mốc phải chỉ rõ khái niệm, vấn đề nó giải quyết, cách áp dụng, giới hạn hoặc đánh đổi, một tình huống cụ thể và cách kiểm chứng. Ưu tiên đủ ý và đúng ngữ cảnh hơn độ dài. Không sao chép nguyên văn tài liệu nguồn.
+Mỗi lĩnh vực bắt đầu từ các tài liệu gốc, tiêu chuẩn và hướng dẫn được sử dụng rộng rãi, với số nguồn tùy theo phạm vi. Lập danh mục các ý cốt lõi từ mục lục và nội dung nguồn trước khi viết. Roadmap chỉ chứa tên và mô tả ngắn; trang bài học giải thích đủ khái niệm, cơ chế, cách áp dụng và đánh đổi để hỗ trợ quyết định trong công việc senior. Số mốc mỗi lĩnh vực, cấu trúc bài và độ dài từng mục tùy thuộc kiến thức thực tế. Không sao chép nguyên văn tài liệu nguồn.
 
 Với Clean Code, khung ý đối chiếu [*Clean Code*, ấn bản 2](https://www.oreilly.com/library/view/clean-code-a/9780135398586/toc.xhtml), [*Refactoring*, ấn bản 2](https://martinfowler.com/books/refactoring.html) và [Google Engineering Practices](https://google.github.io/eng-practices/review/reviewer/looking-for.html):
 

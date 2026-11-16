@@ -1,4 +1,6 @@
 import { cleanCodeLessons } from './clean-code.js';
+import { securityLessons } from './security.js';
+import { designPatternLessons } from './design-patterns.js';
 
 export const domains = [
   { id: 'security', icon: '◇', eyebrow: 'NỀN TẢNG', title: 'Bảo mật', description: 'Nhận diện rủi ro và bảo vệ dữ liệu, quyền truy cập.', color: 'mint', stage: 'Bảo vệ từ thiết kế' },
@@ -84,9 +86,9 @@ const legacyNodes = [
 ];
 
 const outlines = {
-  security: ['Threat modeling; xác thực và phân quyền', 'Secret; bảo mật ứng dụng và API', 'Chuỗi cung ứng; nguyên lý mật mã'],
+  security: ['Mô hình đe dọa và ranh giới tin cậy', 'Danh tính, xác thực và phiên đăng nhập', 'Phân quyền theo hành động và bản ghi', 'Đầu vào, đầu ra và bề mặt tấn công API', 'Secret, mật mã và vòng đời khóa', 'Chuỗi cung ứng và phát triển an toàn', 'Ghi nhận, phát hiện và ứng phó sự cố', 'Kiểm chứng bảo mật và quản trị rủi ro'],
   clean_code: ['Tên, ý định và hàm có trách nhiệm rõ', 'Kiểm soát độ phức tạp và xử lý lỗi', 'Refactoring và đánh đổi của Clean Code'],
-  design_patterns: ['Bài toán lặp lại; composition; dependency injection', 'Nhóm pattern tạo lập và cấu trúc', 'Nhóm pattern hành vi; nhận diện áp dụng sai'],
+  design_patterns: ['Pattern là lời giải cho lực thiết kế', 'Dependency Injection và Strategy', 'Factory, Builder và kiểm soát khởi tạo', 'Adapter, Facade, Decorator và Proxy', 'Observer, Command và State', 'Pattern tại ranh giới hệ thống', 'Chọn pattern và nhận diện áp dụng sai'],
   data: ['Mô hình dữ liệu; SQL; PostgreSQL', 'Index; transaction; migration', 'NoSQL; tìm kiếm; backup và restore'],
   devops: ['Linux; shell; network; container', 'CI/CD; triển khai; IaC; cloud; Kubernetes', 'Logging; metrics; incident; chi phí'],
   system_design: ['Yêu cầu; ước lượng; scale', 'Consistency; reliability; giao tiếp dịch vụ', 'Failure modes và trade-offs'],
@@ -124,9 +126,9 @@ const englishDomains = {
   security: ['Security', 'Identify risks and protect data and access.'], clean_code: ['Clean Code', 'Write code with clear intent that is easy to change.'], design_patterns: ['Design Patterns', 'Recognize recurring solutions and their trade-offs.'], backend: ['Backend & APIs', 'From one request to a reliable system.'], data: ['Data', 'Model, query, preserve, and recover data.'], devops: ['DevOps & Cloud', 'Deploy, observe, and operate services.'], system_design: ['System Design', 'Design for load, failure, and change.'], architecture: ['Software Architecture', 'Define boundaries and system quality decisions.'], ba: ['Business Analysis (BA)', 'Clarify problems, processes, and requirements.'], po: ['Product Ownership (PO)', 'Set goals and prioritize a valuable backlog.'], product: ['Product Management', 'Find opportunities and evaluate outcomes.'], project: ['Project Management', 'Manage scope, resources, risks, and delivery.'], ux: ['UX', 'Design task flows around user needs.'], ui: ['UI', 'Create clear, consistent, adaptable interfaces.'], ai: ['AI Foundations & Operations', 'Use AI with context and verification.'], ai_roles: ['AI by Role', 'Apply AI to the responsibilities of each role.'], senior: ['Senior Skills', 'Clarify, decide, lead, and respond to incidents.'],
 };
 const englishOutlines = {
-  security: ['Threat modeling; authentication and authorization', 'Secrets; application and API security', 'Software supply chain; cryptography basics'],
+  security: ['Threat modeling and trust boundaries', 'Identity, authentication, and sessions', 'Authorization by action and object', 'Inputs, outputs, and API attack surface', 'Secrets, cryptography, and key lifecycle', 'Software supply chain and secure development', 'Logging, detection, and incident response', 'Security verification and risk decisions'],
   clean_code: ['Names, intent, and focused functions', 'Managing complexity and errors', 'Refactoring and Clean Code trade-offs'],
-  design_patterns: ['Recurring problems; composition; dependency injection', 'Creational and structural patterns', 'Behavioral patterns and pattern misuse'],
+  design_patterns: ['Patterns as responses to design forces', 'Dependency Injection and Strategy', 'Factory, Builder, and object creation', 'Adapter, Facade, Decorator, and Proxy', 'Observer, Command, and State', 'Patterns at system boundaries', 'Choosing patterns and spotting misuse'],
   backend: ['How does an HTTP request travel?', 'Design an API that is easy to use', 'Authentication and authorization'],
   data: ['Data modeling; SQL; PostgreSQL', 'Indexes; transactions; migrations', 'NoSQL; search; backup and restore'],
   devops: ['Linux; shell; networking; containers', 'CI/CD; deployment; IaC; cloud; Kubernetes', 'Logs; metrics; incidents; cost'],
@@ -171,7 +173,8 @@ export function setContentLanguage(language) {
       ];
       node.takeaway = `You know what to ask before studying ${title.toLowerCase()} in depth.`;
     }
-    const lesson = cleanCodeLessons[node.id]?.[language];
+    const lesson = cleanCodeLessons[node.id]?.[language] ?? securityLessons[node.id]?.[language] ?? designPatternLessons[node.id]?.[language];
     if (lesson) Object.assign(node, lesson);
+    node.contentStatus = lesson ? 'full' : 'outline';
   });
 }

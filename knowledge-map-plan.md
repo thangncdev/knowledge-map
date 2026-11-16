@@ -71,18 +71,9 @@ Giải thích bằng tình huống: lúc nào một agent đủ, lúc nào có t
 4. Review chất lượng mẫu, chỉnh template và schema, rồi mở rộng từng cụm.
 5. Rà định kỳ liên kết, kiến thức dễ thay đổi và các bài bị phản hồi.
 
-Ba mức biên tập: **bản đồ** (metadata/mô tả một câu), **nắm vững** (giải thích đủ ra quyết định), **đào sâu** (cơ chế, so sánh, đánh đổi, tình huống). Không ép mọi mốc có độ dài như nhau.
+Hai độ sâu phải tách rõ: **roadmap** chỉ chứa tên và mô tả ngắn để định hướng; **bài học** là tài liệu đầy đủ đến mức người đọc có thể hiểu cơ chế, chọn cách áp dụng và nhận ra giới hạn trong công việc senior. Không giới hạn số mốc mỗi lĩnh vực, số mục trong một bài hay độ dài mỗi mục. Chia mốc theo ranh giới kiến thức và quyết định thực tế, không theo một con số cố định.
 
-Template bài học:
-
-1. Mục tiêu: đọc xong cần hiểu và quyết định được gì.
-2. Hiểu nhanh: định nghĩa dễ hiểu và ví dụ trong vài phút.
-3. Giải thích: nguyên lý và mối liên hệ với tiền đề.
-4. Khi nào cần, khi nào không; các lựa chọn và đánh đổi.
-5. Hiểu lầm thường gặp; dấu hiệu người đọc thực sự hiểu.
-6. Ứng dụng với AI trong công việc, nếu phù hợp.
-7. Tự đào sâu/tự thực hành bên ngoài web, **tùy chọn**.
-8. Nguồn gốc chọn lọc và bài liên quan.
+Bài học không dùng template mục cố định. Trước khi viết, đối chiếu mục lục và nội dung của nguồn gốc có thẩm quyền để lập bản kiểm kê ý: định nghĩa, cơ chế, trường hợp dùng, lựa chọn và đánh đổi, lỗi thường gặp, tình huống thực tế, cách đánh giá kết quả. Chỉ đưa những phần phù hợp với chủ đề. Mỗi phần cần giải thích đủ rõ để người đọc có thể áp dụng; không cắt ngắn chỉ để các bài trông đồng đều. Dẫn nguồn gần nội dung tương ứng, ghi rõ phiên bản/ngày rà soát với kiến thức dễ thay đổi và tránh sao chép nguyên văn dài.
 
 Quy tắc review: câu chữ tự viết; nguồn trực tiếp hỗ trợ luận điểm; phân biệt sự kiện với nhận định; ví dụ không xuyên tạc; có cấp độ cho người mới; chỗ quan trọng đủ sâu; không dạy thuộc cú pháp; ưu tiên tài liệu chính thức/chuẩn/tác giả gốc; nguồn blog cá nhân ghi rõ là góc nhìn thực tế. Không sao chép dài nội dung bên thứ ba.
 
