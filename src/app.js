@@ -4,7 +4,7 @@ import { translateInterface } from './locale.js';
 const STORAGE_KEY = 'knowledge-map-progress-v1';
 const LANGUAGE_KEY = 'knowledge-map-language';
 const app = document.querySelector('#app');
-const state = { progress: loadProgress(), language: localStorage.getItem(LANGUAGE_KEY) === 'en' ? 'en' : 'vi', view: 'overview', domain: null, node: null, panel: null, listMode: false, mobileNav: false };
+const state = { progress: loadProgress(), language: localStorage.getItem(LANGUAGE_KEY) === 'en' ? 'en' : 'vi', view: 'overview', domain: null, node: null, panel: null, listMode: false, mobileNav: false, expanded: new Set(['backend']), selected: null, filter: 'all', search: '', map: { x: 0, y: 0, zoom: 0.7 }, mapReady: false };
 setContentLanguage(state.language);
 
 function loadProgress() {
@@ -16,6 +16,7 @@ function loadProgress() {
 }
 function persist() { localStorage.setItem(STORAGE_KEY, JSON.stringify({ schemaVersion: 1, nodes: state.progress })); }
 function status(node) {
+  if (state.progress[node.id]?.status) return state.progress[node.id].status;
   const missing = node.prerequisites.filter(id => state.progress[id]?.status !== 'mastered');
   if (missing.length) return 'locked';
   return state.progress[node.id]?.status || 'available';
@@ -28,6 +29,7 @@ function navigate(view, id) {
   state.domain = view === 'domain' ? id : view === 'lesson' ? nodeById[id]?.domain : null;
   state.node = view === 'lesson' ? id : null;
   state.panel = null;
+  if(view === 'domain') { state.filter = 'all'; state.expanded.add(id); state.focusDomain = id; }
   state.mobileNav = false;
   const hash = view === 'overview' ? '#/roadmap' : view === 'domain' ? `#/roadmap/${id}` : `#/knowledge/${id}`;
   if (location.hash !== hash) location.hash = hash;
@@ -41,7 +43,7 @@ function syncHash() {
 }
 function badge(node) {
   const s = status(node);
-  return `<span class="status status-${s}"><span class="status-dot"></span>${{ locked:'Chưa mở', available:'Sẵn sàng', in_progress:'Đang học', mastered:'Đã nắm' }[s]}</span>`;
+  return `<span class="status status-${s}"><span class="status-dot"></span>${{ locked:'Nên học tiền đề', available:'Sẵn sàng', in_progress:'Đang học', mastered:'Đã nắm' }[s]}</span>`;
 }
 function icon(name, size = 20) {
   const paths = {
@@ -54,51 +56,131 @@ function icon(name, size = 20) {
   };
   return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[name]}</svg>`;
 }
+const groups = [
+  { id: 'foundation', title: 'Nền tảng kỹ thuật', en: 'Engineering foundations', ids: ['security','clean_code','design_patterns'] },
+  { id: 'systems', title: 'Xây dựng hệ thống', en: 'Building systems', ids: ['backend','data','devops','system_design','architecture'] },
+  { id: 'products', title: 'Xây dựng sản phẩm', en: 'Building products', ids: ['ba','po','product','project','ux','ui'] },
+  { id: 'ai', title: 'AI trong công việc', en: 'AI at work', ids: ['ai','ai_roles'] },
+  { id: 'collaboration', title: 'Năng lực phối hợp', en: 'Working together', ids: ['senior'] },
+];
+const tr = (vi,en) => state.language === 'en' ? en : vi;
+let graph = { width: 1440, height: 1600, items: [], lines: [] };
 function shell(content) {
-  const total = nodes.length;
-  return `<div class="app-shell">
+  return `<div class="app-shell ${state.view !== 'lesson' ? 'map-shell' : ''}">
     <aside class="sidebar ${state.mobileNav ? 'sidebar-open' : ''}" aria-label="Điều hướng chính">
-      <button class="brand" data-nav="overview" aria-label="Về roadmap tổng quan"><span class="brand-mark">&gt;_</span><span><strong>knowledge<span class="brand-light">map</span></strong><small>DEVELOPER ROADMAP</small></span></button>
-      <div class="sidebar-section-label">// NAVIGATION</div>
-      <nav class="side-nav"><button data-nav="overview" class="side-link ${state.view === 'overview' ? 'active' : ''}">${icon('grid')}<span>Roadmap</span></button>
-      ${domains.map(d => `<button data-domain="${d.id}" class="side-link ${state.domain === d.id ? 'active' : ''}"><span class="side-domain-icon ${d.color}">${d.icon}</span><span>${d.title}</span></button>`).join('')}</nav>
-      <div class="side-bottom"><div class="side-progress-label"><span>YOUR_PROGRESS</span><strong>${completed()}/${total}</strong></div><div class="progress-track"><span style="width:${completed()/total*100}%"></span></div><p>Tiến độ lưu trên trình duyệt của bạn.</p><button class="side-transfer" data-panel="transfer">${icon('download',17)} Export / Import</button></div>
-    </aside>${state.mobileNav ? `<button class="mobile-scrim" data-action="mobile-nav" aria-label="Đóng menu"></button>` : ''}
-    <div class="main-column"><header class="topbar"><button class="mobile-menu icon-button" data-action="mobile-nav" aria-label="${state.mobileNav ? 'Đóng' : 'Mở'} menu" aria-expanded="${state.mobileNav}">${icon('menu')}</button><div class="topbar-path"><span class="prompt-char">~</span><span>/ roadmap</span>${state.domain ? `<span class="slash">/</span><strong>${escapeHtml(domainById[state.domain]?.title || '')}</strong>` : ''}</div><div class="topbar-right"><button class="language-switch" data-action="language" aria-label="${state.language === 'vi' ? 'Switch to English' : 'Chuyển sang Tiếng Việt'}">${state.language === 'vi' ? 'EN' : 'VI'}</button><span class="prototype-pill"><span></span> PROTOTYPE V0.1</span><button class="topbar-progress" data-panel="transfer">${icon('download',16)} <span>Tiến độ</span></button></div></header><main id="main-content">${content}</main></div>
-    ${state.panel ? panel() : ''}
-  </div>`;
+      <button class="brand" data-nav="overview" aria-label="Về roadmap tổng quan"><span class="brand-mark">&gt;_</span><span><strong>knowledge<span class="brand-light">map</span></strong><small>PERSONAL KNOWLEDGE SYSTEM</small></span></button>
+      <div class="sidebar-section-label">EXPLORER <span>${domains.length}</span></div>
+      <button data-nav="overview" class="side-link ${state.filter === 'all' && state.view !== 'lesson' ? 'active' : ''}">${icon('grid',16)} ${tr('Toàn bộ kiến thức','All knowledge')}</button>
+      <nav class="side-nav">${groups.map(g=>`<div class="explorer-group"><button class="explorer-heading ${state.filter === g.id ? 'selected' : ''}" data-filter="${g.id}"><span>⌄</span> ${tr(g.title,g.en)} <small>${g.ids.length}</small></button>${g.ids.map(id=>`<button data-domain="${id}" class="side-link ${state.domain === id ? 'active' : ''}"><span class="tree-branch">├</span><span>${domainById[id].title}</span><small>${completed(id)}/${domainNodes(id).length}</small></button>`).join('')}</div>`).join('')}</nav>
+      <div class="side-bottom"><div class="side-progress-label"><span>LEARNING_PROGRESS</span><strong>${completed()}/${nodes.length}</strong></div><div class="progress-track"><span style="width:${completed()/nodes.length*100}%"></span></div><p>Tiến độ lưu trên trình duyệt của bạn.</p><button class="side-transfer" data-panel="transfer">${icon('download',15)} Export / Import</button></div>
+    </aside>${state.mobileNav ? '<button class="mobile-scrim" data-action="mobile-nav" aria-label="Đóng menu"></button>' : ''}
+    <div class="main-column"><header class="topbar"><button class="mobile-menu icon-button" data-action="mobile-nav" aria-label="Mở menu" aria-expanded="${state.mobileNav}">${icon('menu')}</button><div class="topbar-path"><span class="prompt-char">~</span><button data-nav="overview">knowledge</button><span class="slash">/</span><strong>${state.view === 'lesson' ? 'docs / '+escapeHtml(state.node) : 'roadmap'}</strong></div><div class="topbar-right"><button class="search-trigger" data-action="search" aria-label="${tr('Tìm kiến thức','Search knowledge')}">${icon('list',14)} <span>${tr('Tìm kiến thức…','Find knowledge…')}</span><kbd>⌘ K</kbd></button><button class="language-switch" data-action="language">${state.language === 'vi' ? 'EN' : 'VI'}</button><span class="prototype-pill">PREVIEW / V0.2</span></div></header><main id="main-content">${content}</main></div>${state.panel ? panel() : ''}</div>`;
 }
-function overview() {
-  return `<div class="page overview-page"><div class="page-intro"><div class="terminal-bar"><span class="terminal-dots"><i></i><i></i><i></i></span><span>~/knowledge-map/roadmap</span><span class="terminal-mode">● LIVE</span></div><div class="intro-content"><span class="eyebrow">$ knowledge-map --start</span><h1>Build your<br><em>knowledge graph<span class="cursor">_</span></em></h1><p>Khám phá ${domains.length} lĩnh vực về kỹ thuật, sản phẩm, AI và năng lực phối hợp. Chọn nhánh cần tìm hiểu rồi đi sâu theo nhu cầu của bạn.</p><div class="hero-command"><span>$</span> chọn lĩnh vực bên dưới để bắt đầu <span class="cursor">_</span></div></div><div class="intro-art" aria-hidden="true"><div class="graph-node graph-a">01</div><div class="graph-node graph-b">02</div><div class="graph-node graph-c">03</div><div class="graph-node graph-d">04</div><div class="graph-line line-a"></div><div class="graph-line line-b"></div><div class="graph-line line-c"></div></div></div>
-    <section class="overview-stats" aria-label="Tổng quan tiến độ"><div><span class="stat-symbol">01</span><strong>${domains.length}<small> lĩnh vực</small></strong></div><div><span class="stat-symbol">02</span><strong>${nodes.length}<small> mốc kiến thức</small></strong></div><div><span class="stat-symbol">03</span><strong>${completed()}<small> đã nắm</small></strong></div><p><span class="prompt-char">›</span> Mỗi mốc chỉ khóa khi có tiền đề thật sự bắt buộc.</p></section>
-    <div class="section-heading"><div><span class="eyebrow dark">// ROADMAP OVERVIEW</span><h2>Chọn nhánh để khám phá</h2></div><span class="section-hint">${domains.length} tracks · ${nodes.length} nodes</span></div>
-    <div class="domain-grid">${domains.map((d, i) => `<button class="domain-card ${d.color}" data-domain="${d.id}"><span class="domain-card-top"><span class="domain-symbol">${d.icon}</span><span class="domain-index">TRACK_${String(i+1).padStart(2,'0')}</span></span><span class="domain-copy"><span class="domain-eyebrow">${d.eyebrow}</span><strong>${d.title}</strong><span>${d.description}</span></span><span class="mini-path" aria-hidden="true"><i class="${status(domainNodes(d.id)[0])}"></i><b></b><i class="${status(domainNodes(d.id)[1])}"></i><b></b><i class="${status(domainNodes(d.id)[2])}"></i><span>${completed(d.id)}/3 completed</span></span><span class="domain-card-footer">Mở nhánh roadmap <span>${icon('arrow',18)}</span></span></button>`).join('')}</div>
-    <div class="overview-note"><span>&gt;_</span><p><strong>Học theo nhịp của bạn.</strong> Đọc mốc đã mở, tự đánh dấu phần quen thuộc và quay lại bất cứ lúc nào.</p></div></div>`;
+function buildGraph() {
+  const items = [], lines = [];
+  const addLine = (x1,y1,x2,y2,kind='tree')=>lines.push({x1,y1,x2,y2,kind});
+  items.push({kind:'root',x:550,y:35,w:340,h:64});
+  addLine(720,99,720,135); addLine(720,135,80,135);
+  let y=165, previous=135;
+  groups.filter(g=>state.filter==='all'||state.filter===g.id).forEach((g,gi)=>{
+    addLine(80,previous,80,y+21); addLine(80,y+21,555,y+21);
+    items.push({kind:'group',id:g.id,x:555,y,w:330,h:42,index:groups.indexOf(g)});
+    let rowY=y+90;
+    for(let offset=0;offset<g.ids.length;offset+=3) {
+      const row=g.ids.slice(offset,offset+3);
+      const positions=row.length===1?[720]:row.length===2?[505,935]:[290,720,1150];
+      const hasExpanded=row.some(id=>state.expanded.has(id));
+      const busY=rowY-25;
+      if(offset===0) addLine(720,y+42,720,busY);
+      else addLine(80,rowY-(hasPreviousExpanded?300:105)+64,80,busY);
+      if(offset>0) addLine(80,busY,positions[0],busY);
+      if(row.length>1) addLine(positions[0],busY,positions.at(-1),busY);
+      row.forEach((id,j)=>{
+        const x=positions[j]-155;
+        addLine(positions[j],busY,positions[j],rowY);
+        items.push({kind:'domain',id,x,y:rowY,w:310,h:64});
+        if(state.expanded.has(id)) {
+          const children=domainNodes(id);
+          children.forEach((n,i)=>{
+            const ny=rowY+91+i*67;
+            addLine(x+12,i===0?rowY+64:ny-39,x+12,ny+28,'branch');
+            addLine(x+12,ny+28,x+32,ny+28,'branch');
+            items.push({kind:'node',id:n.id,x:x+32,y:ny,w:278,h:56});
+            if(i>0 && n.prerequisites.includes(children[i-1].id)) addLine(x+285,ny-11,x+285,ny,'prereq');
+          });
+        }
+      });
+      if(offset===0 && g.ids.length>3) {addLine(positions[0],busY,80,busY);addLine(80,busY,80,rowY+64);}
+      var hasPreviousExpanded=hasExpanded;
+      rowY+=hasExpanded?300:105;
+    }
+    previous=y+21;
+    y=rowY+70;
+  });
+  graph={width:1440,height:y+25,items,lines};
 }
-function milestone(node, index) {
-  const s = status(node);
-  return `<button class="milestone ${s}" data-node="${node.id}"><span class="milestone-number">${s === 'mastered' ? icon('check',22) : s === 'locked' ? icon('lock',18) : String(index+1).padStart(2,'0')}</span><span class="milestone-content"><span class="milestone-meta">NODE / ${escapeHtml(node.id)} <span>·</span> ${node.duration}</span><strong>${node.title}</strong><span class="milestone-summary">${node.summary}</span><span class="milestone-bottom">${badge(node)} <span class="milestone-arrow">${icon('arrow',18)}</span></span></span></button>`;
+function roadmapView() {
+  buildGraph();
+  const selected=nodeById[state.selected];
+  return `<div class="roadmap-page"><div class="map-heading"><div><div class="eyebrow">// YOUR KNOWLEDGE, CONNECTED</div><h1>${tr('Bản đồ kiến thức','Knowledge roadmap')}<span>_</span></h1><p>${tr('Nhìn toàn cảnh. Mở từng nhánh. Hiểu đến tận gốc.','See the whole picture. Explore each branch. Understand deeply.')}</p></div><div class="map-totals"><strong>${domains.length}<small>${tr('lĩnh vực','domains')}</small></strong><span>/</span><strong>${nodes.length}<small>${tr('chủ đề','topics')}</small></strong></div></div>
+    <div class="map-toolbar"><div class="map-tabs"><button data-filter="all" class="${state.filter==='all'?'active':''}">${tr('Toàn cảnh','Overview')}</button>${groups.map(g=>`<button data-filter="${g.id}" class="${state.filter===g.id?'active':''}">${tr(g.title,g.en)}</button>`).join('')}</div><div class="map-actions"><button data-action="expand-all">${tr('Mở tất cả','Expand all')}</button><button data-action="collapse-all">${tr('Thu gọn','Collapse')}</button></div></div>
+    <div class="map-viewport" aria-label="${tr('Bản đồ tương tác. Kéo để di chuyển; dùng các nút để phóng to hoặc thu nhỏ.','Interactive roadmap. Drag to pan; use controls to zoom.')}" tabindex="0"><div class="map-canvas" style="width:${graph.width}px;height:${graph.height}px">${graphMarkup()}</div><div class="canvas-label"><span class="live-dot"></span> knowledge.tree <span> / ${state.filter==='all'?'all':state.filter}</span></div><div class="canvas-hint">${tr('Kéo để di chuyển · Bấm nhánh để mở','Drag to explore · Click a branch to expand')}</div>
+      <div class="map-controls"><button data-action="zoom-out" aria-label="${tr('Thu nhỏ','Zoom out')}">−</button><span id="zoom-value">${Math.round(state.map.zoom*100)}%</span><button data-action="zoom-in" aria-label="${tr('Phóng to','Zoom in')}">+</button><i></i><button data-action="fit" aria-label="${tr('Xem toàn cảnh','Fit overview')}">${icon('grid',16)}</button><button data-action="reset-map" aria-label="${tr('Về điểm bắt đầu','Back to start')}">↖</button></div>
+      <button class="minimap" data-action="minimap" aria-label="${tr('Di chuyển trên bản đồ thu nhỏ','Navigate minimap')}"><svg viewBox="0 0 ${graph.width} ${graph.height}" aria-hidden="true">${graph.items.map(n=>`<rect x="${n.x}" y="${n.y}" width="${n.w}" height="${n.h}" class="mini-${n.kind}"/>`).join('')}<rect id="mini-window" x="0" y="0" width="800" height="600"/></svg></button>
+      ${selected ? inspector(selected) : ''}
+    </div><footer class="map-statusbar"><div><span class="legend-line-sample"></span>${tr('Phân nhánh chủ đề','Topic hierarchy')}<span class="legend-line-sample dashed"></span>${tr('Nên học trước','Learn first')}</div><span><i class="status-dot"></i> ${tr('Nội dung mẫu để duyệt giao diện','Sample content for design review')}</span><span>${completed()}/${nodes.length} ${tr('đã nắm','mastered')}</span></footer></div>`;
 }
-function domainView() {
-  const d = domainById[state.domain], dn = domainNodes(d.id), next = dn.find(n => status(n) === 'in_progress') || dn.find(n => status(n) === 'available') || dn.find(n => status(n) === 'locked');
-  return `<div class="page domain-page"><button class="text-back" data-nav="overview">${icon('back',16)} Roadmap</button><section class="domain-hero ${d.color}"><div><span class="eyebrow">TRACK / ${d.id.toUpperCase()}</span><h1>${d.title}<span class="cursor">_</span></h1><p>${d.description} Ba mốc minh họa thứ tự học và những tiền đề cần thiết.</p><div class="hero-chips"><span>${dn.length} NODES</span><span>${completed(d.id)}/${dn.length} COMPLETED</span></div></div><span class="hero-glyph" aria-hidden="true">${d.icon}</span></section>
-    <div class="domain-layout"><section class="journey-section"><div class="section-heading compact"><div><span class="eyebrow dark">// STAGE 01 · ${d.stage.toUpperCase()}</span><h2>Learning path</h2></div><button class="view-toggle" data-action="toggle-list" aria-pressed="${state.listMode}">${icon('list',17)} ${state.listMode ? 'Roadmap view' : 'List view'}</button></div><div class="journey ${state.listMode ? 'list-mode' : ''}">${dn.map(milestone).join('')}</div></section>
-    <aside class="journey-aside"><div class="aside-card next-card"><span class="aside-kicker">✦ GỢI Ý TIẾP THEO</span><h3>${next ? next.title : 'Bạn đã hoàn thành chặng này'}</h3><p>${next ? status(next) === 'locked' ? 'Mốc này cần tiền đề từ lĩnh vực khác. Mở mốc để xem đường đi phù hợp.' : next.summary : 'Bạn có thể quay lại các mốc bất cứ lúc nào.'}</p>${next ? `<button class="aside-link" data-node="${next.id}">${status(next) === 'locked' ? 'Xem tiền đề' : 'Đi tới mốc'} ${icon('arrow',17)}</button>` : `<button class="aside-link" data-nav="overview">Xem toàn cảnh ${icon('arrow',17)}</button>`}</div><div class="aside-card legend-card"><h3>Trạng thái mốc</h3><div>${['mastered','in_progress','available','locked'].map(s => `<span class="legend-line"><i class="legend-dot ${s}"></i>${{mastered:'Đã nắm',in_progress:'Đang học',available:'Sẵn sàng',locked:'Chưa mở'}[s]}</span>`).join('')}</div><p>Mốc chưa mở vẫn có thể bấm để xem tiền đề cần học.</p></div></aside></div></div>`;
+function graphMarkup() {
+  const selected=nodeById[state.selected];
+  const related=new Set(selected?[...selected.prerequisites,...selected.related, ...nodes.filter(n=>n.prerequisites.includes(selected.id)).map(n=>n.id)]:[]);
+  return `<svg class="graph-edges" width="${graph.width}" height="${graph.height}" aria-hidden="true">${graph.lines.map(l=>`<line x1="${l.x1}" y1="${l.y1}" x2="${l.x2}" y2="${l.y2}" class="edge-${l.kind}"/>`).join('')}</svg>${graph.items.map(item=>{
+    const style=`left:${item.x}px;top:${item.y}px;width:${item.w}px;height:${item.h}px`;
+    if(item.kind==='root') return `<div class="graph-root" style="${style}"><span>&gt;_</span><div>knowledge.map<small>${tr('HỆ THỐNG TRI THỨC CÁ NHÂN','PERSONAL KNOWLEDGE SYSTEM')}</small></div></div>`;
+    if(item.kind==='group') {const g=groups.find(g=>g.id===item.id);return `<div class="graph-group" style="${style}"><span>0${item.index+1}</span>${tr(g.title,g.en)}</div>`;}
+    if(item.kind==='domain') {const d=domainById[item.id];return `<button class="graph-domain ${state.expanded.has(d.id)?'expanded':''} ${state.domain===d.id?'focused':''}" data-expand="${d.id}" aria-expanded="${state.expanded.has(d.id)}" style="${style}"><span class="graph-folder">${state.expanded.has(d.id)?'−':'+'}</span><span class="graph-domain-copy"><strong>${d.title}</strong><small>${domainNodes(d.id).length} ${tr('chủ đề','topics')} <span>· ${completed(d.id)} ${tr('đã nắm','mastered')}</span></small></span><span class="graph-domain-arrow">${state.expanded.has(d.id)?'⌃':'⌄'}</span></button>`;}
+    const n=nodeById[item.id],s=status(n);
+    return `<button class="graph-topic ${state.selected===n.id?'selected':''} ${related.has(n.id)?'related':''} ${s}" data-select="${n.id}" style="${style}" aria-pressed="${state.selected===n.id}"><span class="topic-status">${s==='mastered'?'✓':s==='in_progress'?'◐':'○'}</span><span>${escapeHtml(n.title)}</span><small>↗</small></button>`;
+  }).join('')}`;
+}
+function inspector(n) {
+  return `<aside class="node-inspector" aria-label="${tr('Xem nhanh chủ đề','Topic preview')}"><div class="inspector-top"><span>DOC_PREVIEW</span><button data-action="close-inspector" aria-label="${tr('Đóng','Close')}">${icon('close',16)}</button></div><div class="inspector-body"><div class="inspector-id">${n.id}</div><h2>${n.title}</h2><p>${n.summary}</p><div class="inspector-meta">${badge(n)}<span>${n.duration}</span></div><div class="inspector-section"><h3>${tr('Bạn sẽ hiểu được','What you will understand')}</h3><p>${n.takeaway}</p></div><div class="inspector-section"><h3>${tr('Nên học trước','Learn first')}</h3>${n.prerequisites.length?n.prerequisites.map(id=>`<button data-jump="${id}"><span>${state.progress[id]?.status==='mastered'?'✓':'○'}</span>${nodeById[id].title} ↗</button>`).join(''):`<p>${tr('Có thể bắt đầu tại đây.','Start here. No prerequisites.')}</p>`}</div>${n.related.length?`<div class="inspector-section"><h3>${tr('Kiến thức liên quan','Related knowledge')}</h3>${n.related.map(id=>`<button data-jump="${id}">${nodeById[id].title} ↗</button>`).join('')}</div>`:''}<button class="primary-button read-topic" data-read="${n.id}">${tr('Đọc bài chuyên sâu','Read the full lesson')} ${icon('arrow',17)}</button><p class="inspector-footnote">${tr('Bài viết mở ngay trong Knowledge Map.','Read right here in Knowledge Map.')}</p></div></aside>`;
 }
 function lessonView() {
   const n = nodeById[state.node], d = domainById[n.domain], s = status(n), dn = domainNodes(n.domain), next = dn.find(x => x.order > n.order);
   return `<div class="page lesson-page"><div class="breadcrumbs"><button data-nav="overview">roadmap</button><span>/</span><button data-domain="${d.id}">${d.id}</button><span>/</span><strong>${n.id}</strong></div><div class="lesson-header"><div><span class="eyebrow dark">DOC / ${escapeHtml(n.id)}</span><h1>${n.title}<span class="cursor">_</span></h1><p>${n.summary}</p><div class="lesson-meta">${badge(n)}<span>◷ ${n.duration} đọc</span><span>◇ ${n.level}</span></div></div><span class="lesson-header-symbol ${d.color}">${d.icon}</span></div>
-    <div class="lesson-layout"><article class="article"><div class="article-callout"><span>SAU BÀI NÀY, BẠN CÓ THỂ</span><strong>${n.takeaway}</strong></div>${n.sections.map(([heading, body], i) => `<section id="section-${i+1}" class="article-section"><span class="section-number">0${i+1}</span><div><h2>${heading}</h2><p>${body}</p></div></section>`).join('')}<div class="article-tip"><span>✳</span><p><strong>Tự đào sâu</strong><br>Thử giải thích khái niệm này cho một đồng nghiệp bằng ví dụ từ công việc của bạn. Ghi lại câu hỏi nào bạn chưa trả lời chắc chắn.</p></div>
-      <div class="lesson-actions">${s === 'locked' ? `<button class="primary-button" data-panel="locked:${n.id}">${icon('lock',17)} Xem tiền đề cần học</button>` : s === 'mastered' ? `<button class="secondary-button" data-action="unmaster">${icon('check',18)} Đã nắm · Bỏ đánh dấu</button>` : `<button class="primary-button" data-action="master">${icon('check',18)} Đánh dấu đã nắm</button>${s === 'available' ? `<button class="secondary-button" data-action="start">Bắt đầu học</button>` : ''}`}<button class="plain-button" data-domain="${d.id}">Quay về roadmap ${icon('arrow',16)}</button></div>
+    <div class="lesson-layout"><article class="article"><div class="article-callout"><span>SAU BÀI NÀY, BẠN CÓ THỂ</span><strong>${n.takeaway}</strong></div>${n.sections.map(([heading, body], i) => `<section id="section-${i+1}" class="article-section"><span class="section-number">0${i+1}</span><div><h2>${heading}</h2><p>${body}</p></div></section>`).join('')}${lessonExample(n)}<div class="article-tip"><span>✳</span><p><strong>Tự đào sâu</strong><br>Thử giải thích khái niệm này cho một đồng nghiệp bằng ví dụ từ công việc của bạn. Ghi lại câu hỏi nào bạn chưa trả lời chắc chắn.</p></div>
+      <div class="lesson-actions">${s === 'mastered' ? `<button class="secondary-button" data-action="unmaster">${icon('check',18)} Đã nắm · Bỏ đánh dấu</button>` : `<button class="primary-button" data-action="master">${icon('check',18)} Đánh dấu đã nắm</button>${['available','locked'].includes(s) ? `<button class="secondary-button" data-action="start">Bắt đầu học</button>` : ''}`}<button class="plain-button" data-action="return-map">Quay về roadmap ${icon('arrow',16)}</button></div>
       ${next ? `<button class="next-lesson" data-node="${next.id}"><span>MỐC TIẾP THEO<strong>${next.title}</strong></span>${icon('arrow',20)}</button>` : ''}</article>
       <aside class="lesson-aside"><div class="aside-card toc"><span class="aside-kicker">TRONG BÀI NÀY</span>${n.sections.map(([heading],i)=>`<a href="#section-${i+1}"><span>0${i+1}</span>${heading}</a>`).join('')}</div><div class="aside-card prerequisite-card"><span class="aside-kicker">TIỀN ĐỀ</span>${n.prerequisites.length ? n.prerequisites.map(id=>`<button data-node="${id}">${icon('book',16)} ${nodeById[id].title} ${status(nodeById[id]) === 'mastered' ? '<span>✓</span>' : ''}</button>`).join('') : '<p>Mốc khởi đầu, không có tiền đề bắt buộc.</p>'}</div><div class="aside-card related-card"><span class="aside-kicker">KHÁM PHÁ THÊM</span>${n.related.filter(id=>nodeById[id]).map(id=>`<button data-node="${id}">${nodeById[id].title} ${icon('arrow',15)}</button>`).join('')}</div></aside></div></div>`;
 }
-function panel() {
-  if (state.panel === 'transfer') return `<div class="modal-backdrop" data-close="true"><section class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title"><button class="modal-close icon-button" data-action="close" aria-label="Đóng">${icon('close')}</button><span class="eyebrow dark">DỮ LIỆU CỦA BẠN</span><h2 id="modal-title">Tiến độ học tập</h2><p>Tiến độ chỉ lưu trên trình duyệt hiện tại. Xuất file JSON để sao lưu hoặc chuyển sang thiết bị khác.</p><div class="transfer-summary"><strong>${completed()} / ${nodes.length}</strong><span>mốc đã nắm</span></div><div class="modal-actions"><button class="primary-button" data-action="export">${icon('download',17)} Xuất JSON</button><label class="secondary-button file-label">${icon('upload',17)} Nhập JSON<input id="import-file" type="file" accept="application/json,.json" /></label></div><p class="modal-fine">Khi nhập, trạng thái hợp lệ trong file sẽ thay thế tiến độ hiện tại. Mốc không còn tồn tại sẽ được bỏ qua.</p><div id="import-preview" aria-live="polite"></div></section></div>`;
-  const id = state.panel.split(':')[1], node = nodeById[id], missing = node.prerequisites.filter(pid => state.progress[pid]?.status !== 'mastered');
-  return `<div class="modal-backdrop" data-close="true"><section class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title"><button class="modal-close icon-button" data-action="close" aria-label="Đóng">${icon('close')}</button><span class="lock-icon">${icon('lock',24)}</span><span class="eyebrow dark">MỐC CHƯA MỞ</span><h2 id="modal-title">${node.title}</h2><p>Để bắt đầu mốc này, hãy đánh dấu đã nắm các tiền đề bắt buộc bên dưới.</p><div class="missing-list">${missing.map(pid => `<button data-node="${pid}"><span><small>TIỀN ĐỀ CẦN HỌC</small><strong>${nodeById[pid].title}</strong><em>${domainById[nodeById[pid].domain].title}</em></span>${icon('arrow',19)}</button>`).join('')}</div><p class="modal-fine">Bạn có thể mở mốc tiền đề để học hoặc tự đánh dấu nếu đã nắm kiến thức đó.</p></section></div>`;
+function lessonExample(n) {
+  if(n.id!=='backend.api') return '';
+  return `<section class="worked-example"><div class="eyebrow">// EXAMPLE · ORDER API</div><h2>${tr('Từ yêu cầu đến hợp đồng API','From a requirement to an API contract')}</h2><p>${tr('Người dùng xác nhận giỏ hàng để tạo đơn. Trước khi viết controller, cần thống nhất dữ liệu đầu vào, quyền truy cập, kết quả và hành vi khi gửi lại yêu cầu.','A customer confirms their cart to place an order. Before writing the controller, agree on inputs, access, outputs, and what happens if the request is retried.')}</p><div class="request-flow"><span>Client</span><b>→</b><span>Validate & authorize</span><b>→</b><span>Create order</span></div><pre><code>POST /api/orders
+Authorization: Bearer &lt;token&gt;
+Idempotency-Key: checkout-2026-001
+
+{
+  "items": [{ "productId": "book-01", "quantity": 2 }],
+  "shippingAddressId": "address-01"
 }
-function render() { app.innerHTML = shell(state.view === 'overview' ? overview() : state.view === 'domain' ? domainView() : lessonView()); if (state.language === 'en') translateInterface(app); document.documentElement.lang = state.language; document.title = `${state.view === 'lesson' ? nodeById[state.node].title + ' — ' : ''}Knowledge Map`; }
+
+201 Created
+Location: /api/orders/order-123
+
+{
+  "id": "order-123",
+  "status": "pending",
+  "total": 240000,
+  "currency": "VND"
+}</code></pre><h3>${tr('Những quyết định cần làm rõ','Decisions to make explicit')}</h3><ul><li>${tr('Server tính giá từ dữ liệu sản phẩm; không tin giá do client gửi.','Calculate prices on the server; do not trust prices submitted by the client.')}</li><li>${tr('Kiểm tra địa chỉ giao hàng có thuộc người đang đăng nhập không.','Check that the shipping address belongs to the signed-in customer.')}</li><li>${tr('Cùng một Idempotency-Key và cùng nội dung phải trả về cùng một kết quả, tránh tạo hai đơn khi retry.','The same idempotency key and payload should return the same outcome to avoid duplicate orders on retries.')}</li></ul><div class="example-errors"><span><code>400</code> ${tr('Dữ liệu sai định dạng','Invalid input')}</span><span><code>403</code> ${tr('Không có quyền','Access denied')}</span><span><code>409</code> ${tr('Xung đột trạng thái','State conflict')}</span></div><div class="practice-block"><span>TRY IT YOURSELF</span><p>${tr('Nếu mặt hàng hết tồn kho sau khi người dùng thêm vào giỏ, API nên phản hồi thế nào? Mô tả response và cách giao diện giúp người dùng xử lý tiếp.','If an item goes out of stock after it was added to the cart, how should the API respond? Describe the response and how the interface helps the customer continue.')}</p></div></section>`;
+}
+function panel() {
+  if (state.panel === 'search') return searchPanel();
+  if (state.panel === 'transfer') return `<div class="modal-backdrop" data-close="true"><section class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title"><button class="modal-close icon-button" data-action="close" aria-label="${tr('Đóng','Close')}">${icon('close')}</button><span class="eyebrow dark">DỮ LIỆU CỦA BẠN</span><h2 id="modal-title">Tiến độ học tập</h2><p>Tiến độ chỉ lưu trên trình duyệt hiện tại. Xuất file JSON để sao lưu hoặc chuyển sang thiết bị khác.</p><div class="transfer-summary"><strong>${completed()} / ${nodes.length}</strong><span>mốc đã nắm</span></div><div class="modal-actions"><button class="primary-button" data-action="export">${icon('download',17)} Xuất JSON</button><label class="secondary-button file-label">${icon('upload',17)} Nhập JSON<input id="import-file" type="file" accept="application/json,.json" /></label></div><p class="modal-fine">Khi nhập, trạng thái hợp lệ trong file sẽ thay thế tiến độ hiện tại. Mốc không còn tồn tại sẽ được bỏ qua.</p><div id="import-preview" aria-live="polite"></div></section></div>`;
+  const id = state.panel.split(':')[1], node = nodeById[id], missing = node.prerequisites.filter(pid => state.progress[pid]?.status !== 'mastered');
+  return `<div class="modal-backdrop" data-close="true"><section class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title"><button class="modal-close icon-button" data-action="close" aria-label="${tr('Đóng','Close')}">${icon('close')}</button><span class="lock-icon">${icon('lock',24)}</span><span class="eyebrow dark">MỐC CHƯA MỞ</span><h2 id="modal-title">${node.title}</h2><p>Để bắt đầu mốc này, hãy đánh dấu đã nắm các tiền đề bắt buộc bên dưới.</p><div class="missing-list">${missing.map(pid => `<button data-node="${pid}"><span><small>TIỀN ĐỀ CẦN HỌC</small><strong>${nodeById[pid].title}</strong><em>${domainById[nodeById[pid].domain].title}</em></span>${icon('arrow',19)}</button>`).join('')}</div><p class="modal-fine">Bạn có thể mở mốc tiền đề để học hoặc tự đánh dấu nếu đã nắm kiến thức đó.</p></section></div>`;
+}
+function render() { app.innerHTML = shell(state.view === 'lesson' ? lessonView() : roadmapView()); if (state.language === 'en') translateInterface(app); document.documentElement.lang = state.language; if(state.view !== 'lesson') requestAnimationFrame(mountMap); if(state.panel) requestAnimationFrame(()=>(document.querySelector('.modal input')||document.querySelector('.modal button'))?.focus()); document.title = `${state.view === 'lesson' ? nodeById[state.node].title + ' — ' : ''}Knowledge Map`; }
 function setStatus(id, value) { if (!value) delete state.progress[id]; else state.progress[id] = { status: value, updatedAt: new Date().toISOString() }; persist(); render(); }
 function exportProgress() { const file = new Blob([JSON.stringify({schemaVersion:1,nodes:state.progress}, null, 2)], {type:'application/json'}); const url=URL.createObjectURL(file); const a=document.createElement('a'); a.href=url; a.download='knowledge-map-progress.json'; a.click(); setTimeout(()=>URL.revokeObjectURL(url),1000); }
 async function previewImport(file) {
@@ -117,13 +199,25 @@ async function previewImport(file) {
 app.addEventListener('click', event => {
   const sectionLink = event.target.closest('a[href^="#section-"]');
   if (sectionLink) { event.preventDefault(); document.querySelector(sectionLink.getAttribute('href'))?.scrollIntoView({behavior:'smooth',block:'start'}); return; }
-  const target = event.target.closest('[data-nav],[data-domain],[data-node],[data-panel],[data-action],[data-close]'); if (!target) return;
-  if (target.dataset.nav) return navigate('overview');
+  const target = event.target.closest('[data-nav],[data-domain],[data-node],[data-panel],[data-action],[data-close],[data-expand],[data-select],[data-filter],[data-jump],[data-read]'); if (!target) return;
+  if (target.dataset.expand) { state.expanded.has(target.dataset.expand)?state.expanded.delete(target.dataset.expand):state.expanded.add(target.dataset.expand); return renderKeepingMap(); }
+  if (target.dataset.select) { state.selected=target.dataset.select; return renderKeepingMap(); }
+  if (target.dataset.filter) { state.filter=target.dataset.filter; state.selected=null; state.mapReady=false; return navigate('overview'); }
+  if (target.dataset.jump) return jumpToNode(target.dataset.jump);
+  if (target.dataset.read) return navigate('lesson',target.dataset.read);
+  if (target.dataset.nav) { state.filter='all'; return navigate('overview'); }
   if (target.dataset.domain) return navigate('domain', target.dataset.domain);
-  if (target.dataset.node) { const n=nodeById[target.dataset.node]; return status(n)==='locked' ? (state.panel=`locked:${n.id}`,render()) : navigate('lesson',n.id); }
+  if (target.dataset.node) return navigate('lesson',target.dataset.node);
   if (target.dataset.panel) { state.panel=target.dataset.panel; return render(); }
   if (target.dataset.close && event.target === target) { state.panel=null; return render(); }
   const action=target.dataset.action;
+  if (action==='return-map') return navigate('overview');
+  if (action==='search') { state.panel='search'; state.search=''; return renderKeepingMap(); }
+  if (action==='close-inspector') { state.selected=null; return renderKeepingMap(); }
+  if (action==='expand-all'||action==='collapse-all') { state.expanded=action==='expand-all'?new Set(domains.map(d=>d.id)):new Set(); return renderKeepingMap(); }
+  if (action==='zoom-in'||action==='zoom-out') return zoomMap(action==='zoom-in'?1.2:1/1.2);
+  if (action==='fit'||action==='reset-map') return resetMap(action==='fit');
+  if (action==='minimap') { const box=target.getBoundingClientRect(); state.map.y=-(event.clientY-box.top)/box.height*graph.height*state.map.zoom+document.querySelector('.map-viewport').clientHeight/2; return applyMap(); }
   if (action==='language') { state.language = state.language === 'vi' ? 'en' : 'vi'; localStorage.setItem(LANGUAGE_KEY, state.language); setContentLanguage(state.language); return render(); }
   if (action==='close') { state.panel=null; return render(); }
   if (action==='toggle-list') { state.listMode=!state.listMode; return render(); }
@@ -136,5 +230,80 @@ app.addEventListener('click', event => {
 });
 app.addEventListener('change', event => { if (event.target.id === 'import-file' && event.target.files[0]) previewImport(event.target.files[0]); });
 window.addEventListener('hashchange', syncHash);
-window.addEventListener('keydown', event => { if (event.key==='Escape' && state.panel) { state.panel=null; render(); } });
+window.addEventListener('keydown', event => { if ((event.metaKey||event.ctrlKey)&&event.key.toLowerCase()==='k') { event.preventDefault(); state.panel='search'; state.search=''; renderKeepingMap(); } if(event.key==='Escape') { if(state.panel){state.panel=null;renderKeepingMap();} else if(state.selected){state.selected=null;renderKeepingMap();} } });
+function renderKeepingMap() { render(); }
+function applyMap() {
+  const canvas=document.querySelector('.map-canvas'), viewport=document.querySelector('.map-viewport');
+  if(!canvas||!viewport) return;
+  canvas.style.transform=`translate(${state.map.x}px,${state.map.y}px) scale(${state.map.zoom})`;
+  document.querySelector('#zoom-value').textContent=Math.round(state.map.zoom*100)+'%';
+  const mini=document.querySelector('#mini-window');
+  mini?.setAttribute('x',-state.map.x/state.map.zoom);
+  mini?.setAttribute('y',-state.map.y/state.map.zoom);
+  mini?.setAttribute('width',viewport.clientWidth/state.map.zoom);
+  mini?.setAttribute('height',viewport.clientHeight/state.map.zoom);
+}
+function resetMap(all=false) {
+  const viewport=document.querySelector('.map-viewport'); if(!viewport)return;
+  state.map.zoom=all?Math.min(.92,(viewport.clientWidth-64)/graph.width,(viewport.clientHeight-64)/graph.height):Math.max(viewport.clientWidth<=650?.8:.15,Math.min(.92,(viewport.clientWidth-64)/graph.width));
+  state.map.x=(viewport.clientWidth-graph.width*state.map.zoom)/2;
+  state.map.y=all?(viewport.clientHeight-graph.height*state.map.zoom)/2:25;
+  state.mapReady=true; applyMap();
+}
+function zoomMap(factor,point) {
+  const v=document.querySelector('.map-viewport');if(!v)return;
+  const px=point?.x??v.clientWidth/2,py=point?.y??v.clientHeight/2;
+  const old=state.map.zoom,zoom=Math.max(.15,Math.min(1.8,old*factor));
+  state.map.x=px-(px-state.map.x)*zoom/old;
+  state.map.y=py-(py-state.map.y)*zoom/old;
+  state.map.zoom=zoom;applyMap();
+}
+function jumpToNode(id) {
+  const n=nodeById[id];if(!n)return;
+  state.filter='all';state.expanded.add(n.domain);state.selected=id;state.panel=null;
+  const wasLesson=state.view==='lesson';state.view='overview';
+  state.focusNode=id;render();
+  if(wasLesson) { history.pushState(null,'','#/roadmap'); state.domain=null; state.node=null; }
+}
+function mountMap() {
+  const v=document.querySelector('.map-viewport');if(!v)return;
+  if(!state.mapReady)resetMap();
+  if(state.focusDomain||state.focusNode) {
+    const item=graph.items.find(n=>state.focusNode?n.id===state.focusNode:n.kind==='domain'&&n.id===state.focusDomain);
+    if(item){state.map.zoom=Math.min(.95,(v.clientWidth-(state.selected&&v.clientWidth>650?360:50))/600);state.map.x=(v.clientWidth-(state.selected&&v.clientWidth>650?330:0))/2-(item.x+item.w/2)*state.map.zoom;state.map.y=state.selected&&v.clientWidth<=650?50:v.clientHeight*.3-item.y*state.map.zoom;}
+    state.focusNode=null;state.focusDomain=null;
+  }
+  applyMap();
+  let drag=null;
+  v.addEventListener('pointerdown',event=>{
+    if(event.target.closest('button,a,input,.node-inspector')||event.button!==0)return;
+    drag={x:event.clientX,y:event.clientY,mx:state.map.x,my:state.map.y};
+    v.setPointerCapture(event.pointerId);v.classList.add('dragging');
+  });
+  v.addEventListener('pointermove',event=>{if(!drag)return;state.map.x=drag.mx+event.clientX-drag.x;state.map.y=drag.my+event.clientY-drag.y;applyMap();});
+  const end=()=>{drag=null;v.classList.remove('dragging');};v.addEventListener('pointerup',end);v.addEventListener('pointercancel',end);
+  v.addEventListener('wheel',event=>{
+    if(event.target.closest('.node-inspector'))return;
+    event.preventDefault();
+    if(event.ctrlKey||event.metaKey){const r=v.getBoundingClientRect();zoomMap(Math.exp(-event.deltaY*.008),{x:event.clientX-r.left,y:event.clientY-r.top});}
+    else{state.map.y-=event.deltaY;state.map.x-=event.deltaX;applyMap();}
+  },{passive:false});
+  v.addEventListener('keydown',event=>{if(event.target!==v)return;const step=80;if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','+','-','Home'].includes(event.key))event.preventDefault();if(event.key==='ArrowUp')state.map.y+=step;if(event.key==='ArrowDown')state.map.y-=step;if(event.key==='ArrowLeft')state.map.x+=step;if(event.key==='ArrowRight')state.map.x-=step;if(event.key==='+')return zoomMap(1.2);if(event.key==='-')return zoomMap(1/1.2);if(event.key==='Home')return resetMap();applyMap();});
+}
+function searchResults(query) {
+  const norm=value=>value.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replaceAll('đ','d').toLowerCase();
+  const q=norm(query.trim());
+  const found=nodes.filter(n=>!q||norm(n.title+' '+n.id+' '+domainById[n.domain].title).includes(q)).slice(0,12);
+  return found.length?found.map(n=>`<button data-jump="${n.id}" class="search-result"><span><strong>${escapeHtml(n.title)}</strong><small>${domainById[n.domain].title} / ${n.id}</small></span>${icon('arrow',16)}</button>`).join(''):`<p class="search-empty">${tr('Không tìm thấy chủ đề phù hợp.','No matching topics.')}</p>`;
+}
+function searchPanel() {
+  return `<div class="modal-backdrop" data-close="true"><section class="modal search-modal" role="dialog" aria-modal="true" aria-labelledby="search-title"><div class="search-title"><h2 id="search-title">${tr('Tìm trong bản đồ','Search knowledge')}</h2><button data-action="close" class="icon-button" aria-label="${tr('Đóng','Close')}">${icon('close',18)}</button></div><label class="sr-only" for="knowledge-search">${tr('Tìm kiếm chủ đề','Search topics')}</label><input id="knowledge-search" type="search" placeholder="${tr('Tên chủ đề, lĩnh vực hoặc keyword…','Topic, domain, or keyword…')}" autocomplete="off" value="${escapeHtml(state.search)}"><div class="search-results" aria-live="polite">${searchResults(state.search)}</div><div class="search-footer">ESC ${tr('để đóng','to close')} <span>↵ ${tr('chọn kết quả để tới bản đồ','choose a result to locate it')}</span></div></section></div>`;
+}
+app.addEventListener('input',event=>{if(event.target.id==='knowledge-search'){state.search=event.target.value;document.querySelector('.search-results').innerHTML=searchResults(state.search);}});
+app.addEventListener('keydown',event=>{
+  if(event.target.id==='knowledge-search'&&event.key==='Enter'){const first=document.querySelector('.search-result');if(first){event.preventDefault();first.click();}}
+  if(event.key==='Tab'&&state.panel){const modal=document.querySelector('.modal');const focusable=[...modal.querySelectorAll('button,input,a[href]')].filter(el=>!el.disabled);const first=focusable[0],last=focusable.at(-1);if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}}
+});
+window.addEventListener('resize',()=>{if(state.view!=='lesson')applyMap();});
+
 syncHash();

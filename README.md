@@ -20,10 +20,12 @@ Mở `http://localhost:4173`. Không cần cài package hay chạy build.
 
 ## Nội dung và tương tác mẫu
 
-- 17 lĩnh vực, 51 mốc toàn cảnh theo danh mục hiện hành; bao gồm Clean Code và Design Patterns.
-- Mốc có tiền đề, trạng thái khóa / sẵn sàng / đang học / đã nắm. Bấm mốc khóa để xem tiền đề và đi đến mốc cần học, kể cả ở lĩnh vực khác.
-- Tự đánh dấu tiến độ; các mốc phụ thuộc mở ngay khi đủ tiền đề. Tiến độ lưu bằng `localStorage`, có xuất / nhập JSON kèm bước xem trước.
-- Roadmap có chế độ danh sách và giao diện mobile. Bài học có mục lục, bài liên quan và gợi ý tự đào sâu.
+- 17 lĩnh vực, 51 mốc theo danh mục hiện hành; ba mốc Clean Code đã có bài đầy đủ bằng tiếng Việt và tiếng Anh, các mốc còn lại ở mức toàn cảnh.
+- Roadmap phân nhánh theo phong cách terminal: mở/thu từng lĩnh vực, mở toàn bộ, lọc nhóm, kéo/zoom và minimap. Đường liền biểu thị phân nhánh chủ đề; đường nét đứt thể hiện thứ tự tiền đề.
+- Chọn chủ đề để mở bảng xem nhanh, xem tiền đề và kiến thức liên quan, rồi đọc bài ngay trong web. Tiền đề được hiển thị như gợi ý; có thể đọc và tự đánh dấu phần đã biết.
+- Tự đánh dấu tiến độ đang học / đã nắm. Tiến độ lưu bằng `localStorage`, có xuất / nhập JSON kèm bước xem trước.
+- Tìm kiếm bằng Ctrl/Cmd + K, hỗ trợ tìm tiếng Việt không dấu và định vị chủ đề trên bản đồ. Quay lại từ bài học giữ vị trí và nhánh đang mở.
+- Giao diện có menu mobile và điều khiển bản đồ bằng bàn phím. Bài học có mục lục, bài liên quan và gợi ý tự đào sâu. Bài API minh họa thêm luồng xử lý, request/response và tình huống thực hành.
 - Giao diện và nội dung toàn cảnh có tiếng Việt, tiếng Anh; nút EN/VI ghi nhớ lựa chọn trên trình duyệt. Tiến độ dùng cùng ID ở cả hai ngôn ngữ.
 
-Dữ liệu mẫu ở [`src/data.js`](./src/data.js). Các mốc mới là nội dung toàn cảnh để chọn hướng đào sâu, chưa phải bài chuyên sâu đã được kiểm chứng nguồn. Prototype hiện dùng dữ liệu JavaScript tĩnh; bước sau khi duyệt sẽ tách bài ra file nội dung, bổ sung schema và nguồn tham khảo.
+Dữ liệu map ở [`src/data.js`](./src/data.js); bài mẫu Clean Code ở [`src/clean-code.js`](./src/clean-code.js). Các lĩnh vực khác hiện là nội dung toàn cảnh để chọn hướng đào sâu. Bài Clean Code đã gắn nguồn chọn lọc, nhưng vẫn cần review biên tập trước khi coi là bản cuối.

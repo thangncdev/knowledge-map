@@ -11,7 +11,7 @@ export const interfaceText = {
   'Mốc này cần tiền đề từ lĩnh vực khác. Mở mốc để xem đường đi phù hợp.': 'This milestone needs a prerequisite from another domain. Open it to see the path.',
   'Bạn có thể quay lại các mốc bất cứ lúc nào.': 'You can revisit any milestone at any time.', 'Xem tiền đề': 'View prerequisites', 'Đi tới mốc': 'Go to milestone', 'Xem toàn cảnh': 'View overview',
   'Trạng thái mốc': 'Milestone status', 'Mốc chưa mở vẫn có thể bấm để xem tiền đề cần học.': 'You can open a locked milestone to see what to learn first.',
-  'Chưa mở': 'Locked', 'Sẵn sàng': 'Available', 'Đang học': 'In progress', 'Đã nắm': 'Mastered',
+  'Nên học tiền đề': 'Prerequisites suggested', 'Chưa mở': 'Locked', 'Sẵn sàng': 'Available', 'Đang học': 'In progress', 'Đã nắm': 'Mastered',
   'SAU BÀI NÀY, BẠN CÓ THỂ': 'AFTER THIS LESSON, YOU CAN', 'Tự đào sâu': 'Explore further',
   'Thử giải thích khái niệm này cho một đồng nghiệp bằng ví dụ từ công việc của bạn. Ghi lại câu hỏi nào bạn chưa trả lời chắc chắn.': 'Explain this concept to a colleague using an example from your work. Note any question you cannot answer confidently yet.',
   'Xem tiền đề cần học': 'View prerequisites', 'Đã nắm · Bỏ đánh dấu': 'Mastered · Remove mark', 'Đánh dấu đã nắm': 'Mark as mastered', 'Bắt đầu học': 'Start learning', 'Quay về roadmap': 'Back to roadmap',
