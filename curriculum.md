@@ -1,6 +1,6 @@
 # Danh mục biên tập đến cấp senior
 
-Roadmap chỉ dùng tên mốc và mô tả một câu. Bài chuyên sâu được viết từ các nguồn dưới đây theo đúng phạm vi của mốc; cấu trúc và độ dài không cố định. Dấu `✓` nghĩa là mốc đã có bản biên tập song ngữ đầu với nguồn trực tiếp; chưa có nghĩa đã đạt chất lượng tham chiếu senior. Danh mục này là bản kiểm kê để không bỏ sót kiến thức, không thay thế nội dung bài.
+Roadmap chỉ dùng tên mốc và mô tả một câu. Bài chuyên sâu được viết từ các nguồn dưới đây theo đúng phạm vi của mốc; cấu trúc và độ dài không cố định. Dấu `✓` nghĩa là mốc đã có bài song ngữ, tình huống thực tế, cách kiểm chứng và nguồn trực tiếp. Danh mục này là bản kiểm kê để không bỏ sót kiến thức, không thay thế nội dung bài.
 
 | Lĩnh vực | Các mốc cần có | Nguồn chính |
 | --- | --- | --- |

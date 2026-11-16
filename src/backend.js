@@ -1,3 +1,5 @@
+import { seniorExpansions } from './senior-expansions.js';
+
 // Backend & API: RFC 9110/9111, OWASP API Security, OpenTelemetry và tài liệu queue.
 const topics = [
   {
@@ -114,10 +116,10 @@ const topics = [
 
 function sourceSection(sources, language) {
   const links = sources.map(([label, url]) => `<a href="${url}" target="_blank" rel="noopener noreferrer">${label}</a>`).join(' · ');
-  return language === 'vi' ? ['Nguồn và phạm vi', `Đối chiếu tài liệu gốc: ${links}. Cần kiểm tra hợp đồng với client và hệ thống đang vận hành.`] : ['Sources and scope', `Consult the original sources: ${links}. Verify the contract against real clients and the running system.`];
+  return language === 'vi' ? ['Nguồn và phạm vi', `Đối chiếu tài liệu gốc: ${links}. Cần kiểm tra hợp đồng với client và hệ thống đang vận hành. Rà soát nguồn: 16/11/2026.`] : ['Sources and scope', `Consult the original sources: ${links}. Verify the contract against real clients and the running system. Sources reviewed: 16 November 2026.`];
 }
 
 export const backendLessons = Object.fromEntries(topics.map(topic => [topic.id, {
-  vi: { title: topic.title[0], summary: topic.summary[0], takeaway: topic.takeaway[0], level: 'Bản đầu', duration: '8 phút', sections: [...topic.sections.map(([heading, body]) => [heading, body]), sourceSection(topic.sources, 'vi')] },
-  en: { title: topic.title[1], summary: topic.summary[1], takeaway: topic.takeaway[1], level: 'First draft', duration: '8 min', sections: [...topic.sections.map(([, , heading, body]) => [heading, body]), sourceSection(topic.sources, 'en')] }
+  vi: { title: topic.title[0], summary: topic.summary[0], takeaway: topic.takeaway[0], level: 'Chuyên sâu', duration: '16 phút', sections: [...topic.sections.map(([heading, body]) => [heading, body]), ...(seniorExpansions[topic.id]?.map(([heading, body]) => [heading, body]) ?? []), sourceSection(topic.sources, 'vi')] },
+  en: { title: topic.title[1], summary: topic.summary[1], takeaway: topic.takeaway[1], level: 'In depth', duration: '16 min', sections: [...topic.sections.map(([, , heading, body]) => [heading, body]), ...(seniorExpansions[topic.id]?.map(([, , heading, body]) => [heading, body]) ?? []), sourceSection(topic.sources, 'en')] }
 }]));

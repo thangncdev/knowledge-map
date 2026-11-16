@@ -1,3 +1,5 @@
+import { seniorExpansions } from './senior-expansions.js';
+
 // Bài Bảo mật: biên soạn từ OWASP ASVS 5, OWASP Cheat Sheet Series,
 // OWASP API Security Top 10 và NIST. Nội dung viết lại theo tình huống ứng dụng.
 const topics = [
@@ -77,7 +79,7 @@ const topics = [
       ['Đưa bảo mật vào luồng làm việc', 'Khi thiết kế tính năng, ghi yêu cầu bảo mật cùng yêu cầu chức năng: dữ liệu nhạy cảm, quyền, giới hạn tài nguyên và hành vi khi lỗi. Test các kiểm soát quan trọng trong CI, nhưng giữ review thủ công cho ranh giới nghiệp vụ và mô hình đe dọa. Với thay đổi rủi ro cao, dùng rollout từng phần và có đường quay lại. Security review hữu ích nhất trước khi quyết định khó đảo ngược được triển khai.', 'Build security into delivery', 'Record security needs beside functional requirements: sensitive data, permissions, resource limits, and failure behavior. Test important controls in CI, while retaining human review for business boundaries and threat models. For higher-risk changes, roll out gradually and have a rollback path. Security review is most valuable before hard-to-reverse decisions are deployed.'],
       ['Tình huống kiểm tra', 'Giả sử một package phụ trong build bị thay đổi. Hãy tìm ai có thể duyệt phiên bản mới, CI có chạy mã cài đặt của package không, secret nào có mặt lúc build và artifact nào đã phát hành. Nếu không trả lời được, quy trình chưa đủ khả năng điều tra. Thực hành truy vết một bản phát hành từ artifact về commit và dependency cụ thể.', 'A verification scenario', 'Suppose a transitive build package changes. Find who approves the version, whether CI runs its install scripts, which secrets are present during build, and which artifacts were released. If you cannot answer, investigation readiness is weak. Practice tracing a release from artifact back to its commit and dependency set.']
     ],
-    sources: [['OWASP Top 10:2025', 'https://top10.owasp.org/2025/0x00_2025-Introduction/'], ['OWASP ASVS', 'https://asvs.owasp.org/']]
+    sources: [['NIST SSDF SP 800-218', 'https://csrc.nist.gov/pubs/sp/800/218/final'], ['OWASP Software Supply Chain Security', 'https://cheatsheetseries.owasp.org/cheatsheets/Software_Supply_Chain_Security_Cheat_Sheet.html'], ['OWASP ASVS', 'https://asvs.owasp.org/']]
   },
   {
     id: 'security.7',
@@ -115,10 +117,10 @@ topics[0].sections.push(
 
 function sourceSection(sources, language) {
   const links = sources.map(([label, url]) => `<a href="${url}" target="_blank" rel="noopener noreferrer">${label}</a>`).join(' · ');
-  return language === 'vi' ? ['Nguồn và phạm vi', `Đối chiếu tài liệu gốc: ${links}. Các khuyến nghị cần được kiểm tra với kiến trúc, dữ liệu và mức rủi ro của hệ thống đang làm.`] : ['Sources and scope', `Consult the original guidance: ${links}. Apply these recommendations in the context of your system's architecture, data, and risk.`];
+  return language === 'vi' ? ['Nguồn và phạm vi', `Đối chiếu tài liệu gốc: ${links}. Các khuyến nghị cần được kiểm tra với kiến trúc, dữ liệu và mức rủi ro của hệ thống đang làm. Rà soát nguồn: 16/11/2026.`] : ['Sources and scope', `Consult the original guidance: ${links}. Apply these recommendations in the context of your system's architecture, data, and risk. Sources reviewed: 16 November 2026.`];
 }
 
 export const securityLessons = Object.fromEntries(topics.map(topic => [topic.id, {
-  vi: { title: topic.title[0], summary: topic.summary[0], takeaway: topic.takeaway[0], level: topic.id === 'security.1' ? 'Chuyên sâu' : 'Bản đầu', duration: topic.id === 'security.1' ? '20 phút' : '8 phút', sections: [...topic.sections.map(([viHeading, viBody]) => [viHeading, viBody]), sourceSection(topic.sources, 'vi')] },
-  en: { title: topic.title[1], summary: topic.summary[1], takeaway: topic.takeaway[1], level: topic.id === 'security.1' ? 'In depth' : 'First draft', duration: topic.id === 'security.1' ? '20 min' : '8 min', sections: [...topic.sections.map(([, , enHeading, enBody]) => [enHeading, enBody]), sourceSection(topic.sources, 'en')] }
+  vi: { title: topic.title[0], summary: topic.summary[0], takeaway: topic.takeaway[0], level: 'Chuyên sâu', duration: topic.id === 'security.1' ? '20 phút' : '16 phút', sections: [...topic.sections.map(([viHeading, viBody]) => [viHeading, viBody]), ...(seniorExpansions[topic.id]?.map(([heading, body]) => [heading, body]) ?? []), sourceSection(topic.sources, 'vi')] },
+  en: { title: topic.title[1], summary: topic.summary[1], takeaway: topic.takeaway[1], level: 'In depth', duration: topic.id === 'security.1' ? '20 min' : '16 min', sections: [...topic.sections.map(([, , enHeading, enBody]) => [enHeading, enBody]), ...(seniorExpansions[topic.id]?.map(([, , heading, body]) => [heading, body]) ?? []), sourceSection(topic.sources, 'en')] }
 }]));

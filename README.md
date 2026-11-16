@@ -20,7 +20,7 @@ Mở `http://localhost:4173`. Không cần cài package hay chạy build.
 
 ## Nội dung và tương tác mẫu
 
-- 17 lĩnh vực, 133 mốc theo danh mục hiện hành. Sáu bài đã biên tập sâu: ba bài Clean Code, bài mô hình đe dọa, bài xác định vấn đề sản phẩm và bài nền tảng LLM. Hai mươi ba bài Bảo mật, Design Patterns và Backend & API đang ở bản biên tập đầu; 104 mốc còn lại là dàn ý, được kiểm kê trong [danh mục biên tập](./curriculum.md).
+- 17 lĩnh vực, 133 mốc theo danh mục hiện hành. Hai mươi chín bài đã có bản chuyên sâu song ngữ: Clean Code, Bảo mật, Design Patterns, Backend & API, bài xác định vấn đề sản phẩm và bài nền tảng LLM. 104 mốc còn lại là dàn ý, được kiểm kê trong [danh mục biên tập](./curriculum.md).
 - Roadmap phân nhánh theo phong cách terminal: mở/thu từng lĩnh vực, mở toàn bộ, lọc nhóm, kéo/zoom và minimap. Đường liền biểu thị phân nhánh chủ đề; đường nét đứt thể hiện thứ tự tiền đề.
 - Chọn chủ đề để mở bảng xem nhanh, xem tiền đề và kiến thức liên quan, rồi đọc bài ngay trong web. Tiền đề được hiển thị như gợi ý; có thể đọc và tự đánh dấu phần đã biết.
 - Mỗi mốc trên map có mức ưu tiên Cốt lõi / Nên học / Mở rộng để định hướng; đây là phân loại biên tập ban đầu và có thể khai báo riêng bằng `importance` trong dữ liệu mốc. Màu theo nhóm lĩnh vực, còn hình và nhãn thể hiện trạng thái học.

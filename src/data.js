@@ -209,6 +209,6 @@ export function setContentLanguage(language) {
     }
     const lesson = cleanCodeLessons[node.id]?.[language] ?? securityLessons[node.id]?.[language] ?? designPatternLessons[node.id]?.[language] ?? backendLessons[node.id]?.[language] ?? productLessons[node.id]?.[language] ?? aiLessons[node.id]?.[language];
     if (lesson) Object.assign(node, lesson);
-    node.contentStatus = !lesson ? 'outline' : cleanCodeLessons[node.id] || node.id === 'security.1' || node.id === 'product.problem' || node.id === 'ai.llm' ? 'full' : 'draft';
+    node.contentStatus = !lesson ? 'outline' : 'full';
   });
 }

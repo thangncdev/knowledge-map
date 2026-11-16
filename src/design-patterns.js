@@ -1,3 +1,5 @@
+import { seniorExpansions } from './senior-expansions.js';
+
 // Design Patterns: tổng hợp theo GoF, danh mục pattern và bài viết của Martin Fowler.
 const topics = [
   {
@@ -94,10 +96,10 @@ const topics = [
 
 function sourceSection(sources, language) {
   const links = sources.map(([label, url]) => `<a href="${url}" target="_blank" rel="noopener noreferrer">${label}</a>`).join(' · ');
-  return language === 'vi' ? ['Nguồn và phạm vi', `Đọc thêm từ tài liệu gốc: ${links}. Đây là bản biên soạn thực hành; chọn pattern dựa trên vấn đề và ngữ cảnh cụ thể.`] : ['Sources and scope', `Read the original sources: ${links}. This practical synthesis requires choosing patterns for a concrete problem and context.`];
+  return language === 'vi' ? ['Nguồn và phạm vi', `Đọc thêm từ tài liệu gốc: ${links}. Đây là bản biên soạn thực hành; chọn pattern dựa trên vấn đề và ngữ cảnh cụ thể. Rà soát nguồn: 16/11/2026.`] : ['Sources and scope', `Read the original sources: ${links}. This practical synthesis requires choosing patterns for a concrete problem and context. Sources reviewed: 16 November 2026.`];
 }
 
 export const designPatternLessons = Object.fromEntries(topics.map(topic => [topic.id, {
-  vi: { title: topic.title[0], summary: topic.summary[0], takeaway: topic.takeaway[0], level: 'Bản đầu', duration: '8 phút', sections: [...topic.sections.map(([heading, body]) => [heading, body]), sourceSection(topic.sources, 'vi')] },
-  en: { title: topic.title[1], summary: topic.summary[1], takeaway: topic.takeaway[1], level: 'First draft', duration: '8 min', sections: [...topic.sections.map(([, , heading, body]) => [heading, body]), sourceSection(topic.sources, 'en')] }
+  vi: { title: topic.title[0], summary: topic.summary[0], takeaway: topic.takeaway[0], level: 'Chuyên sâu', duration: '16 phút', sections: [...topic.sections.map(([heading, body]) => [heading, body]), ...(seniorExpansions[topic.id]?.map(([heading, body]) => [heading, body]) ?? []), sourceSection(topic.sources, 'vi')] },
+  en: { title: topic.title[1], summary: topic.summary[1], takeaway: topic.takeaway[1], level: 'In depth', duration: '16 min', sections: [...topic.sections.map(([, , heading, body]) => [heading, body]), ...(seniorExpansions[topic.id]?.map(([, , heading, body]) => [heading, body]) ?? []), sourceSection(topic.sources, 'en')] }
 }]));

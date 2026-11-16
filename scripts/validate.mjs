@@ -53,6 +53,8 @@ for (const node of nodes.filter(node => node.contentStatus !== 'outline')) {
   if (!node.title?.trim() || node.title === vi.title) errors.push(`${node.id}: thiếu tiêu đề tiếng Anh riêng`);
   if (node.sections.length !== vi.sections.length) errors.push(`${node.id}: số mục Việt/Anh không tương đương`);
   if (!node.sections.at(-1)?.[1]?.includes('href=') || !vi.sections.at(-1)?.[1]?.includes('href=')) errors.push(`${node.id}: thiếu nguồn trực tiếp ở một ngôn ngữ`);
+  const wordCount = sections => sections.map(([, body]) => body.replace(/<[^>]+>/g, ' ')).join(' ').trim().split(/\s+/).filter(Boolean).length;
+  if (node.contentStatus === 'full' && (wordCount(node.sections) < 250 || wordCount(vi.sections) < 250)) errors.push(`${node.id}: bài chuyên sâu quá ngắn ở một ngôn ngữ`);
 }
 setContentLanguage('vi');
 
