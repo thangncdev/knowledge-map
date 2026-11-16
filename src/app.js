@@ -3,8 +3,10 @@ import { translateInterface } from './locale.js';
 
 const STORAGE_KEY = 'knowledge-map-progress-v1';
 const LANGUAGE_KEY = 'knowledge-map-language';
+const THEME_KEY = 'knowledge-map-theme';
+const SIDEBAR_KEY = 'knowledge-map-sidebar-collapsed';
 const app = document.querySelector('#app');
-const state = { progress: loadProgress(), language: localStorage.getItem(LANGUAGE_KEY) === 'en' ? 'en' : 'vi', view: 'overview', domain: null, node: null, panel: null, listMode: false, mobileNav: false, expanded: new Set(['backend']), selected: null, filter: 'all', search: '', map: { x: 0, y: 0, zoom: 0.7 }, mapReady: false };
+const state = { progress: loadProgress(), language: localStorage.getItem(LANGUAGE_KEY) === 'en' ? 'en' : 'vi', theme: localStorage.getItem(THEME_KEY) === 'light' ? 'light' : 'dark', sidebarCollapsed: localStorage.getItem(SIDEBAR_KEY) === 'true', sidebarGroups: new Set(['foundation']), sidebarDomains: new Set(), view: 'overview', domain: null, node: null, panel: null, listMode: false, mobileNav: false, expanded: new Set(['backend']), selected: null, filter: 'all', search: '', map: { x: 0, y: 0, zoom: 0.7 }, mapReady: false };
 setContentLanguage(state.language);
 
 function loadProgress() {
@@ -26,7 +28,7 @@ function skipped(domainId) { return nodes.filter(n => !domainId || n.domain === 
 function escapeHtml(value) { return String(value).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' })[c]); }
 function domainNodes(id) { return nodes.filter(node => node.domain === id).sort((a,b) => a.order - b.order); }
 function navigate(view, id) {
-  if (view === 'lesson' && nodeById[id] && nodeById[id].contentStatus !== 'full') {
+  if (view === 'lesson' && nodeById[id]?.contentStatus === 'outline') {
     state.selected = id;
     return navigate('domain', nodeById[id].domain);
   }
@@ -34,6 +36,7 @@ function navigate(view, id) {
   state.domain = view === 'domain' ? id : view === 'lesson' ? nodeById[id]?.domain : null;
   state.node = view === 'lesson' ? id : null;
   state.panel = null;
+  if (state.domain) { state.sidebarGroups.add(groupForDomain(state.domain)); state.sidebarDomains.add(state.domain); }
   if(view === 'domain') { state.filter = 'all'; state.expanded.add(id); state.focusDomain = id; }
   state.mobileNav = false;
   const hash = view === 'overview' ? '#/roadmap' : view === 'domain' ? `#/roadmap/${id}` : `#/knowledge/${id}`;
@@ -80,15 +83,15 @@ function groupForDomain(id) { return groups.find(group => group.ids.includes(id)
 function importanceLabel(value) { return tr(...({ core:['Cốt lõi','Core'], recommended:['Nên học','Recommended'], optional:['Mở rộng','Optional'] }[value])); }
 let graph = { width: 1440, height: 1600, items: [], lines: [] };
 function shell(content) {
-  return `<div class="app-shell ${state.view !== 'lesson' ? 'map-shell' : ''}">
+  return `<div class="app-shell ${state.view !== 'lesson' ? 'map-shell' : ''} ${state.sidebarCollapsed ? 'sidebar-collapsed' : ''}">
     <aside class="sidebar ${state.mobileNav ? 'sidebar-open' : ''}" aria-label="Điều hướng chính">
-      <button class="brand" data-nav="overview" aria-label="Về roadmap tổng quan"><span class="brand-mark">&gt;_</span><span><strong>knowledge<span class="brand-light">map</span></strong><small>PERSONAL KNOWLEDGE SYSTEM</small></span></button>
+      <div class="sidebar-head"><button class="brand" data-nav="overview" aria-label="Về roadmap tổng quan"><span class="brand-mark">&gt;_</span><span><strong>knowledge<span class="brand-light">map</span></strong><small>PERSONAL KNOWLEDGE SYSTEM</small></span></button><button class="sidebar-collapse-button" data-action="sidebar-toggle" aria-label="${tr('Ẩn thanh điều hướng','Hide sidebar')}" title="${tr('Ẩn thanh điều hướng','Hide sidebar')}">‹</button></div>
       <div class="sidebar-section-label">EXPLORER <span>${domains.length}</span></div>
       <button data-nav="overview" class="side-link ${state.filter === 'all' && state.view !== 'lesson' ? 'active' : ''}">${icon('grid',16)} ${tr('Toàn bộ kiến thức','All knowledge')}</button>
-      <nav class="side-nav">${groups.map(g=>`<div class="explorer-group"><button class="explorer-heading ${state.filter === g.id ? 'selected' : ''}" data-filter="${g.id}"><span>⌄</span> ${tr(g.title,g.en)} <small>${g.ids.length}</small></button>${g.ids.map(id=>`<button data-domain="${id}" class="side-link ${state.domain === id ? 'active' : ''}"><span class="tree-branch">├</span><span>${domainById[id].title}</span><small>${completed(id)}/${domainNodes(id).length}</small></button>`).join('')}</div>`).join('')}</nav>
+      <nav class="side-nav" aria-label="${tr('Danh mục kiến thức','Knowledge categories')}">${groups.map(g=>`<div class="explorer-group"><button class="explorer-heading ${state.sidebarGroups.has(g.id) ? 'selected' : ''}" data-sidebar-group="${g.id}" aria-expanded="${state.sidebarGroups.has(g.id)}"><span class="tree-caret">${state.sidebarGroups.has(g.id)?'⌄':'›'}</span> ${tr(g.title,g.en)} <small>${g.ids.length}</small></button>${state.sidebarGroups.has(g.id) ? g.ids.map(id=>`<div class="sidebar-domain"><div class="sidebar-domain-row"><button data-sidebar-domain="${id}" class="side-link ${state.domain === id ? 'active' : ''}" aria-expanded="${state.sidebarDomains.has(id)}"><span class="tree-caret">${state.sidebarDomains.has(id)?'⌄':'›'}</span><span>${domainById[id].title}</span><small>${completed(id)}/${domainNodes(id).length}</small></button><button class="sidebar-domain-map" data-domain="${id}" title="${tr('Xem trên roadmap','Show on roadmap')}" aria-label="${tr('Xem trên roadmap','Show on roadmap')}: ${domainById[id].title}">↗</button></div>${state.sidebarDomains.has(id) ? `<div class="sidebar-topics">${domainNodes(id).map(n=>`<button data-sidebar-topic="${n.id}" class="sidebar-topic ${state.node===n.id?'active':''}" title="${escapeHtml(n.title)}"><span class="topic-mini-status">${status(n)==='mastered'?'✓':'·'}</span><span>${escapeHtml(n.title)}</span></button>`).join('')}</div>` : ''}</div>`).join('') : ''}</div>`).join('')}</nav>
       <div class="side-bottom"><div class="side-progress-label"><span>LEARNING_PROGRESS</span><strong>${completed()}/${nodes.length}</strong></div><div class="progress-track"><span style="width:${completed()/nodes.length*100}%"></span></div><p>Tiến độ lưu trên trình duyệt của bạn.</p><button class="side-transfer" data-panel="transfer">${icon('download',15)} Export / Import</button></div>
     </aside>${state.mobileNav ? '<button class="mobile-scrim" data-action="mobile-nav" aria-label="Đóng menu"></button>' : ''}
-    <div class="main-column"><header class="topbar"><button class="mobile-menu icon-button" data-action="mobile-nav" aria-label="Mở menu" aria-expanded="${state.mobileNav}">${icon('menu')}</button><div class="topbar-path"><span class="prompt-char">~</span><button data-nav="overview">knowledge</button><span class="slash">/</span><strong>${state.view === 'lesson' ? 'docs / '+escapeHtml(state.node) : 'roadmap'}</strong></div><div class="topbar-right"><button class="search-trigger" data-action="search" aria-label="${tr('Tìm kiến thức','Search knowledge')}">${icon('list',14)} <span>${tr('Tìm kiến thức…','Find knowledge…')}</span><kbd>⌘ K</kbd></button><button class="language-switch" data-action="language">${state.language === 'vi' ? 'EN' : 'VI'}</button><span class="prototype-pill">PREVIEW / V0.3</span></div></header><main id="main-content">${content}</main></div>${state.panel ? panel() : ''}</div>`;
+    <div class="main-column"><header class="topbar"><button class="desktop-sidebar-toggle icon-button" data-action="sidebar-toggle" aria-label="${state.sidebarCollapsed ? tr('Hiện thanh điều hướng','Show sidebar') : tr('Ẩn thanh điều hướng','Hide sidebar')}" aria-expanded="${!state.sidebarCollapsed}">${icon('menu')}</button><button class="mobile-menu icon-button" data-action="mobile-nav" aria-label="Mở menu" aria-expanded="${state.mobileNav}">${icon('menu')}</button><div class="topbar-path"><span class="prompt-char">~</span><button data-nav="overview">knowledge</button><span class="slash">/</span><strong>${state.view === 'lesson' ? 'docs / '+escapeHtml(state.node) : 'roadmap'}</strong></div><div class="topbar-right"><button class="search-trigger" data-action="search" aria-label="${tr('Tìm kiến thức','Search knowledge')}">${icon('list',14)} <span>${tr('Tìm kiến thức…','Find knowledge…')}</span><kbd>⌘ K</kbd></button><button class="theme-switch" data-action="theme" aria-label="${state.theme === 'dark' ? tr('Chuyển sang nền sáng','Switch to light mode') : tr('Chuyển sang nền tối','Switch to dark mode')}" title="${state.theme === 'dark' ? tr('Nền sáng','Light mode') : tr('Nền tối','Dark mode')}" aria-pressed="${state.theme === 'light'}">${state.theme === 'dark' ? '☀' : '☾'}</button><button class="language-switch" data-action="language" aria-label="${state.language === 'vi' ? 'Switch to English' : 'Chuyển sang tiếng Việt'}">${state.language === 'vi' ? 'EN' : 'VI'}</button><span class="prototype-pill">PREVIEW / V0.3</span></div></header><main id="main-content">${content}</main></div>${state.panel ? panel() : ''}</div>`;
 }
 function buildGraph() {
   const items = [], lines = [];
@@ -160,8 +163,9 @@ function graphMarkup() {
   }).join('')}`;
 }
 function inspectorReadAction(n) {
-  if (n.contentStatus !== 'full') return `<p class="inspector-footnote">${tr('Đây là mốc định hướng ngắn. Bài chuyên sâu đang được biên soạn từ nguồn gốc.','This is a short roadmap milestone. The full source-based lesson is being written.')}</p>`;
-  return `<button class="primary-button read-topic" data-read="${n.id}">${tr('Đọc bài chuyên sâu','Read the full lesson')} ${icon('arrow',17)}</button><p class="inspector-footnote">${tr('Bài viết mở ngay trong Knowledge Map.','Read right here in Knowledge Map.')}</p>`;
+  if (n.contentStatus === 'outline') return `<p class="inspector-footnote">${tr('Đây là mốc định hướng ngắn. Bài chuyên sâu đang được biên soạn từ nguồn gốc.','This is a short roadmap milestone. The full source-based lesson is being written.')}</p>`;
+  const label = n.contentStatus === 'draft' ? tr('Đọc bản biên tập đầu','Read the first editorial draft') : tr('Đọc bài chuyên sâu','Read the full lesson');
+  return `<button class="primary-button read-topic" data-read="${n.id}">${label} ${icon('arrow',17)}</button><p class="inspector-footnote">${n.contentStatus === 'draft' ? tr('Bài đang được mở rộng và rà soát chuyên môn.','This lesson is being expanded and reviewed.') : tr('Bài viết mở ngay trong Knowledge Map.','Read right here in Knowledge Map.')}</p>`;
 }
 function inspector(n) {
   const priority=importance(n),s=status(n);
@@ -169,11 +173,15 @@ function inspector(n) {
 }
 function sectionBody(body) { return /^\s*<(?:p|pre|ul|ol|div)\b/i.test(body) ? body : `<p>${body}</p>`; }
 function lessonView() {
-  const n = nodeById[state.node], d = domainById[n.domain], s = status(n), dn = domainNodes(n.domain), next = dn.find(x => x.order > n.order);
+  const n = nodeById[state.node], d = domainById[n.domain], s = status(n);
+  const readable = domainNodes(n.domain).filter(item => item.contentStatus !== 'outline');
+  const position = readable.findIndex(item => item.id === n.id);
+  const previous = position > 0 ? readable[position - 1] : null;
+  const next = position >= 0 && position < readable.length - 1 ? readable[position + 1] : null;
   return `<div class="page lesson-page"><div class="breadcrumbs"><button data-nav="overview">roadmap</button><span>/</span><button data-domain="${d.id}">${d.id}</button><span>/</span><strong>${n.id}</strong></div><div class="lesson-header"><div><span class="eyebrow dark">DOC / ${escapeHtml(n.id)}</span><h1>${n.title}<span class="cursor">_</span></h1><p>${n.summary}</p><div class="lesson-meta">${badge(n)}<span>◷ ${n.duration} ${tr('đọc','read')}</span><span>◇ ${n.level}</span></div></div><span class="lesson-header-symbol ${d.color}">${d.icon}</span></div>
-    <div class="lesson-layout"><article class="article"><div class="article-callout"><span>SAU BÀI NÀY, BẠN CÓ THỂ</span><strong>${n.takeaway}</strong></div>${n.sections.map(([heading, body], i) => `<section id="section-${i+1}" class="article-section"><span class="section-number">${String(i+1).padStart(2,'0')}</span><div><h2>${heading}</h2>${sectionBody(body)}</div></section>`).join('')}${lessonExample(n)}<div class="article-tip"><span>✳</span><p><strong>Tự đào sâu</strong><br>Thử giải thích khái niệm này cho một đồng nghiệp bằng ví dụ từ công việc của bạn. Ghi lại câu hỏi nào bạn chưa trả lời chắc chắn.</p></div>
-      <div class="lesson-actions">${s === 'mastered' ? `<button class="secondary-button" data-action="unmaster">${icon('check',18)} Đã nắm · Bỏ đánh dấu</button>` : `<button class="primary-button" data-action="master">${icon('check',18)} Đánh dấu đã nắm</button>${['available','locked'].includes(s) ? `<button class="secondary-button" data-action="start">Bắt đầu học</button>` : ''}`}<button class="plain-button" data-action="return-map">Quay về roadmap ${icon('arrow',16)}</button></div>
-      ${next ? `<button class="next-lesson" data-node="${next.id}"><span>MỐC TIẾP THEO<strong>${next.title}</strong></span>${icon('arrow',20)}</button>` : ''}</article>
+    <div class="lesson-layout"><article class="article">${n.contentStatus === 'draft' ? `<p class="editorial-note">${tr('Bản biên tập đầu — nội dung đang được mở rộng và rà soát chuyên môn.','First editorial draft — content is being expanded and reviewed.')}</p>` : ''}<div class="article-callout"><span>SAU BÀI NÀY, BẠN CÓ THỂ</span><strong>${n.takeaway}</strong></div>${n.sections.map(([heading, body], i) => `<section id="section-${i+1}" class="article-section"><span class="section-number">${String(i+1).padStart(2,'0')}</span><div><h2>${heading}</h2>${sectionBody(body)}</div></section>`).join('')}${lessonExample(n)}<div class="article-tip"><span>✳</span><p><strong>Tự đào sâu</strong><br>Thử giải thích khái niệm này cho một đồng nghiệp bằng ví dụ từ công việc của bạn. Ghi lại câu hỏi nào bạn chưa trả lời chắc chắn.</p></div>
+      <div class="lesson-actions">${s === 'mastered' ? `<button class="secondary-button" data-action="unmaster">${icon('check',18)} Đã nắm · Bỏ đánh dấu</button>` : `<button class="primary-button" data-action="master">${icon('check',18)} Đánh dấu đã nắm</button>`}<button class="plain-button" data-domain="${d.id}">${tr('Về danh mục','Back to category')} ${icon('arrow',16)}</button></div>
+      ${(previous || next) ? `<nav class="lesson-pagination" aria-label="${tr('Điều hướng giữa các bài học','Lesson navigation')}">${previous ? `<button class="lesson-pagination-card previous" data-node="${previous.id}">${icon('back',20)}<span>${tr('BÀI TRƯỚC','PREVIOUS LESSON')}<strong>${previous.title}</strong></span></button>` : '<span></span>'}${next ? `<button class="lesson-pagination-card next" data-node="${next.id}"><span>${tr('HỌC TIẾP','CONTINUE LEARNING')}<strong>${next.title}</strong></span>${icon('arrow',20)}</button>` : '<span></span>'}</nav>` : ''}</article>
       <aside class="lesson-aside"><div class="aside-card toc"><span class="aside-kicker">TRONG BÀI NÀY</span>${n.sections.map(([heading],i)=>`<a href="#section-${i+1}"><span>${String(i+1).padStart(2,'0')}</span>${heading}</a>`).join('')}</div><div class="aside-card prerequisite-card"><span class="aside-kicker">TIỀN ĐỀ</span>${n.prerequisites.length ? n.prerequisites.map(id=>`<button data-node="${id}">${icon('book',16)} ${nodeById[id].title} ${status(nodeById[id]) === 'mastered' ? '<span>✓</span>' : ''}</button>`).join('') : '<p>Mốc khởi đầu, không có tiền đề bắt buộc.</p>'}</div><div class="aside-card related-card"><span class="aside-kicker">KHÁM PHÁ THÊM</span>${n.related.filter(id=>nodeById[id]).map(id=>`<button data-node="${id}">${nodeById[id].title} ${icon('arrow',15)}</button>`).join('')}</div></aside></div></div>`;
 }
 function lessonExample(n) {
@@ -203,7 +211,7 @@ function panel() {
   const id = state.panel.split(':')[1], node = nodeById[id], missing = node.prerequisites.filter(pid => state.progress[pid]?.status !== 'mastered');
   return `<div class="modal-backdrop" data-close="true"><section class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title"><button class="modal-close icon-button" data-action="close" aria-label="${tr('Đóng','Close')}">${icon('close')}</button><span class="lock-icon">${icon('lock',24)}</span><span class="eyebrow dark">MỐC CHƯA MỞ</span><h2 id="modal-title">${node.title}</h2><p>Để bắt đầu mốc này, hãy đánh dấu đã nắm các tiền đề bắt buộc bên dưới.</p><div class="missing-list">${missing.map(pid => `<button data-node="${pid}"><span><small>TIỀN ĐỀ CẦN HỌC</small><strong>${nodeById[pid].title}</strong><em>${domainById[nodeById[pid].domain].title}</em></span>${icon('arrow',19)}</button>`).join('')}</div><p class="modal-fine">Bạn có thể mở mốc tiền đề để học hoặc tự đánh dấu nếu đã nắm kiến thức đó.</p></section></div>`;
 }
-function render() { app.innerHTML = shell(state.view === 'lesson' ? lessonView() : roadmapView()); if (state.language === 'en') translateInterface(app); document.documentElement.lang = state.language; if(state.view !== 'lesson') requestAnimationFrame(mountMap); if(state.panel) requestAnimationFrame(()=>(document.querySelector('.modal input')||document.querySelector('.modal button'))?.focus()); document.title = `${state.view === 'lesson' ? nodeById[state.node].title + ' — ' : ''}Knowledge Map`; }
+function render() { app.innerHTML = shell(state.view === 'lesson' ? lessonView() : roadmapView()); if (state.language === 'en') translateInterface(app); document.documentElement.lang = state.language; document.documentElement.dataset.theme = state.theme; document.querySelector('meta[name="theme-color"]')?.setAttribute('content', state.theme === 'light' ? '#f4f6f8' : '#0b1116'); if(state.view !== 'lesson') requestAnimationFrame(mountMap); if(state.panel) requestAnimationFrame(()=>(document.querySelector('.modal input')||document.querySelector('.modal button'))?.focus()); document.title = `${state.view === 'lesson' ? nodeById[state.node].title + ' — ' : ''}Knowledge Map`; }
 function setStatus(id, value) { if (!value) delete state.progress[id]; else state.progress[id] = { status: value, updatedAt: new Date().toISOString() }; persist(); render(); }
 function exportProgress() { const file = new Blob([JSON.stringify({schemaVersion:1,nodes:state.progress}, null, 2)], {type:'application/json'}); const url=URL.createObjectURL(file); const a=document.createElement('a'); a.href=url; a.download='knowledge-map-progress.json'; a.click(); setTimeout(()=>URL.revokeObjectURL(url),1000); }
 async function previewImport(file) {
@@ -222,11 +230,14 @@ async function previewImport(file) {
 app.addEventListener('click', event => {
   const sectionLink = event.target.closest('a[href^="#section-"]');
   if (sectionLink) { event.preventDefault(); document.querySelector(sectionLink.getAttribute('href'))?.scrollIntoView({behavior:'smooth',block:'start'}); return; }
-  const target = event.target.closest('[data-nav],[data-domain],[data-node],[data-panel],[data-action],[data-close],[data-expand],[data-select],[data-filter],[data-jump],[data-read],[data-progress]');
+  const target = event.target.closest('[data-nav],[data-domain],[data-node],[data-panel],[data-action],[data-close],[data-expand],[data-select],[data-filter],[data-jump],[data-read],[data-progress],[data-sidebar-group],[data-sidebar-domain],[data-sidebar-topic]');
   if (!target) { if(state.selected && !event.target.closest('.node-inspector')) { state.selected=null; renderKeepingMap(); } return; }
   if (target.dataset.expand) { state.expanded.has(target.dataset.expand)?state.expanded.delete(target.dataset.expand):state.expanded.add(target.dataset.expand); return renderKeepingMap(); }
   if (target.dataset.select) { state.selected=target.dataset.select; return renderKeepingMap(); }
   if (target.dataset.progress) { const value=target.dataset.progress; return setStatus(state.selected,value==='clear'?null:value); }
+  if (target.dataset.sidebarGroup) { const id=target.dataset.sidebarGroup; state.sidebarGroups.has(id)?state.sidebarGroups.delete(id):state.sidebarGroups.add(id); return renderKeepingMap(); }
+  if (target.dataset.sidebarDomain) { const id=target.dataset.sidebarDomain; state.sidebarDomains.has(id)?state.sidebarDomains.delete(id):state.sidebarDomains.add(id); return renderKeepingMap(); }
+  if (target.dataset.sidebarTopic) return navigate('lesson',target.dataset.sidebarTopic);
   if (target.dataset.filter) { state.filter=target.dataset.filter; state.selected=null; state.mapReady=false; return navigate('overview'); }
   if (target.dataset.jump) return jumpToNode(target.dataset.jump);
   if (target.dataset.read) return navigate('lesson',target.dataset.read);
@@ -244,12 +255,13 @@ app.addEventListener('click', event => {
   if (action==='fit'||action==='reset-map') return resetMap(action==='fit');
   if (action==='minimap') { const box=target.getBoundingClientRect(); state.map.y=-(event.clientY-box.top)/box.height*graph.height*state.map.zoom+document.querySelector('.map-viewport').clientHeight/2; return applyMap(); }
   if (action==='language') { state.language = state.language === 'vi' ? 'en' : 'vi'; localStorage.setItem(LANGUAGE_KEY, state.language); setContentLanguage(state.language); return render(); }
+  if (action==='theme') { state.theme = state.theme === 'dark' ? 'light' : 'dark'; localStorage.setItem(THEME_KEY, state.theme); return render(); }
+  if (action==='sidebar-toggle') { state.sidebarCollapsed=!state.sidebarCollapsed; localStorage.setItem(SIDEBAR_KEY,String(state.sidebarCollapsed)); return render(); }
   if (action==='close') { state.panel=null; return render(); }
   if (action==='toggle-list') { state.listMode=!state.listMode; return render(); }
   if (action==='mobile-nav') { state.mobileNav=!state.mobileNav; return render(); }
   if (action==='master') return setStatus(state.node,'mastered');
   if (action==='unmaster') return setStatus(state.node,'in_progress');
-  if (action==='start') return setStatus(state.node,'in_progress');
   if (action==='export') return exportProgress();
   if (action==='confirm-import' && state.pendingImport) { state.progress=state.pendingImport; state.pendingImport=null; persist(); state.panel=null; return render(); }
 });

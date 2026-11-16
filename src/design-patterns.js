@@ -98,6 +98,6 @@ function sourceSection(sources, language) {
 }
 
 export const designPatternLessons = Object.fromEntries(topics.map(topic => [topic.id, {
-  vi: { title: topic.title[0], summary: topic.summary[0], takeaway: topic.takeaway[0], level: 'Chuyên sâu', duration: '20 phút', sections: [...topic.sections.map(([heading, body]) => [heading, body]), sourceSection(topic.sources, 'vi')] },
-  en: { title: topic.title[1], summary: topic.summary[1], takeaway: topic.takeaway[1], level: 'In depth', duration: '20 min', sections: [...topic.sections.map(([, , heading, body]) => [heading, body]), sourceSection(topic.sources, 'en')] }
+  vi: { title: topic.title[0], summary: topic.summary[0], takeaway: topic.takeaway[0], level: 'Bản đầu', duration: '8 phút', sections: [...topic.sections.map(([heading, body]) => [heading, body]), sourceSection(topic.sources, 'vi')] },
+  en: { title: topic.title[1], summary: topic.summary[1], takeaway: topic.takeaway[1], level: 'First draft', duration: '8 min', sections: [...topic.sections.map(([, , heading, body]) => [heading, body]), sourceSection(topic.sources, 'en')] }
 }]));

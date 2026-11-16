@@ -1,6 +1,9 @@
 import { cleanCodeLessons } from './clean-code.js';
 import { securityLessons } from './security.js';
 import { designPatternLessons } from './design-patterns.js';
+import { backendLessons } from './backend.js';
+import { productLessons } from './product-lessons.js';
+import { aiLessons } from './ai-lessons.js';
 
 export const domains = [
   { id: 'security', icon: '◇', eyebrow: 'NỀN TẢNG', title: 'Bảo mật', description: 'Nhận diện rủi ro và bảo vệ dữ liệu, quyền truy cập.', color: 'mint', stage: 'Bảo vệ từ thiết kế' },
@@ -89,17 +92,17 @@ const outlines = {
   security: ['Mô hình đe dọa và ranh giới tin cậy', 'Danh tính, xác thực và phiên đăng nhập', 'Phân quyền theo hành động và bản ghi', 'Đầu vào, đầu ra và bề mặt tấn công API', 'Secret, mật mã và vòng đời khóa', 'Chuỗi cung ứng và phát triển an toàn', 'Ghi nhận, phát hiện và ứng phó sự cố', 'Kiểm chứng bảo mật và quản trị rủi ro'],
   clean_code: ['Tên, ý định và hàm có trách nhiệm rõ', 'Kiểm soát độ phức tạp và xử lý lỗi', 'Refactoring và đánh đổi của Clean Code'],
   design_patterns: ['Pattern là lời giải cho lực thiết kế', 'Dependency Injection và Strategy', 'Factory, Builder và kiểm soát khởi tạo', 'Adapter, Facade, Decorator và Proxy', 'Observer, Command và State', 'Pattern tại ranh giới hệ thống', 'Chọn pattern và nhận diện áp dụng sai'],
-  data: ['Mô hình dữ liệu; SQL; PostgreSQL', 'Index; transaction; migration', 'NoSQL; tìm kiếm; backup và restore'],
-  devops: ['Linux; shell; network; container', 'CI/CD; triển khai; IaC; cloud; Kubernetes', 'Logging; metrics; incident; chi phí'],
-  system_design: ['Yêu cầu; ước lượng; scale', 'Consistency; reliability; giao tiếp dịch vụ', 'Failure modes và trade-offs'],
-  architecture: ['Ranh giới hệ thống; mô hình hóa; patterns', 'C4 và Architecture Decision Records', 'Chất lượng hệ thống; đánh đổi và ra quyết định'],
-  ba: ['Stakeholder và khám phá vấn đề', 'Elicitation; quy trình; yêu cầu; mô hình hóa', 'Xác nhận và quản lý thay đổi'],
-  po: ['Product Goal và backlog', 'Giá trị; ưu tiên; chia nhỏ công việc', 'Acceptance criteria và phối hợp với team'],
-  project: ['Phạm vi; kế hoạch; phụ thuộc', 'Nguồn lực; rủi ro; giao tiếp', 'Theo dõi và điều chỉnh dự án'],
-  ux: ['Nghiên cứu người dùng và luồng tác vụ', 'Kiến trúc thông tin; interaction; prototype', 'Usability và accessibility'],
-  ui: ['Phân cấp thị giác; bố cục; typography', 'Màu sắc; trạng thái; responsive', 'Component và design system'],
-  ai_roles: ['AI cho Developer, BA và PO', 'AI cho Product Manager, Project Manager, UI/UX và QA', 'AI cho DevOps và Software Architect'],
-  senior: ['Làm rõ vấn đề mơ hồ; viết và giao tiếp', 'Phản biện; ra quyết định; mentoring', 'Dẫn dắt thay đổi và xử lý sự cố'],
+  data: ['Mô hình dữ liệu và bất biến', 'SQL và mô hình quan hệ', 'Index và kế hoạch thực thi', 'Transaction và đồng thời', 'Migration không gián đoạn', 'Vận hành PostgreSQL', 'Khi nào chọn NoSQL', 'Tìm kiếm và dữ liệu dẫn xuất', 'Backup, restore và kiểm chứng'],
+  devops: ['Linux và shell trong vận hành', 'DNS, TCP và TLS', 'Container và image', 'CI và kiểm chứng thay đổi', 'Triển khai và rollback', 'Infrastructure as Code', 'Cloud, IAM và mạng', 'Kubernetes và orchestration', 'SLO, metrics, logs và traces', 'Incident, toil và chi phí'],
+  system_design: ['Yêu cầu và thuộc tính chất lượng', 'Ước lượng tải và dung lượng', 'Dữ liệu, cache và phân vùng', 'Giao tiếp đồng bộ và bất đồng bộ', 'Consistency và giao dịch phân tán', 'Scale và điểm nghẽn', 'Reliability và failure modes', 'Đánh đổi và kiểm chứng thiết kế'],
+  architecture: ['Bối cảnh và ràng buộc kiến trúc', 'Ranh giới và phụ thuộc', 'Cohesion, coupling và module', 'Mô hình hóa bằng C4', 'Architecture Decision Records', 'Thuộc tính chất lượng', 'Tiến hóa và đánh giá kiến trúc'],
+  ba: ['Stakeholder và phạm vi vấn đề', 'Khám phá quy trình hiện tại', 'Elicitation và bằng chứng', 'Mô hình hóa yêu cầu', 'Yêu cầu chức năng và phi chức năng', 'Xác nhận và nghiệm thu', 'Truy vết và quản lý thay đổi'],
+  po: ['Product Goal và giá trị', 'Product Backlog có thể hành động', 'Thứ tự ưu tiên và chi phí cơ hội', 'Chia nhỏ công việc và refinement', 'Acceptance criteria và chất lượng', 'Sprint và phối hợp cùng team', 'Đo outcome và điều chỉnh'],
+  project: ['Mục tiêu, phạm vi và thành công', 'Kế hoạch và phụ thuộc', 'Ước lượng và bất định', 'Nguồn lực và năng lực', 'Rủi ro và phương án ứng phó', 'Giao tiếp và stakeholder', 'Theo dõi, dự báo và điều chỉnh', 'Đóng dự án và học lại'],
+  ux: ['Nghiên cứu người dùng', 'Tác vụ, journey và nhu cầu', 'Kiến trúc thông tin', 'Interaction và feedback', 'Prototype và kiểm tra giả thuyết', 'Usability testing', 'Accessibility trong trải nghiệm'],
+  ui: ['Phân cấp thị giác', 'Bố cục và khoảng cách', 'Typography cho giao diện', 'Màu sắc và tương phản', 'Trạng thái và phản hồi', 'Responsive và đa thiết bị', 'Component và design system'],
+  ai_roles: ['AI cho Developer', 'AI cho QA', 'AI cho Business Analyst', 'AI cho Product Owner', 'AI cho Product Manager', 'AI cho Project Manager', 'AI cho UX và UI', 'AI cho DevOps và Architect'],
+  senior: ['Làm rõ vấn đề mơ hồ', 'Viết và giao tiếp kỹ thuật', 'Phản biện với bằng chứng', 'Ra quyết định và ghi lại lý do', 'Mentoring và review', 'Phối hợp giữa các nhóm', 'Dẫn dắt thay đổi', 'Xử lý sự cố và học lại'],
 };
 
 const outlineNodes = Object.entries(outlines).flatMap(([domain, stages]) => stages.map((title, index) => ({
@@ -114,10 +117,41 @@ const outlineNodes = Object.entries(outlines).flatMap(([domain, stages]) => stag
   takeaway: `Bạn biết đặt câu hỏi đúng trước khi học sâu về ${title.toLowerCase()}.`,
 })));
 
+const extraTopics = [
+  ['backend', 4, 'Đồng thời, giao dịch và idempotency'],
+  ['backend', 5, 'Cache và tính đúng của dữ liệu'],
+  ['backend', 6, 'Queue và background jobs'],
+  ['backend', 7, 'Rate limit và khả năng chịu lỗi'],
+  ['backend', 8, 'Quan sát và tối ưu hiệu năng'],
+  ['backend', 9, 'Thay đổi API tương thích'],
+  ['product', 4, 'Chiến lược và định vị sản phẩm'],
+  ['product', 5, 'Mô hình giá trị và kinh doanh'],
+  ['product', 6, 'Roadmap theo outcome'],
+  ['product', 7, 'Metric và phân tích sản phẩm'],
+  ['product', 8, 'Thử nghiệm và học từ thị trường'],
+  ['ai', 4, 'Chọn model và công cụ AI'],
+  ['ai', 5, 'Tài liệu riêng, retrieval và RAG'],
+  ['ai', 6, 'AI coding và kiểm chứng mã'],
+  ['ai', 7, 'Agent và sử dụng công cụ'],
+  ['ai', 8, 'Phối hợp nhiều agent'],
+  ['ai', 9, 'MCP, connector, plugin và skill'],
+  ['ai', 10, 'Workflow và automation'],
+  ['ai', 11, 'Đánh giá hệ thống AI'],
+  ['ai', 12, 'Dữ liệu, quyền, chi phí và rủi ro AI'],
+];
+const firstExtraPrerequisite = { backend: 'backend.auth', product: 'product.priority', ai: 'ai.evaluate' };
+const extraNodes = extraTopics.map(([domain, order, title]) => ({
+  id: `${domain}.${order}`, domain, order, title, duration: '5 phút', level: 'Toàn cảnh',
+  summary: `Tìm hiểu ${title.toLowerCase()} và những quyết định quan trọng khi áp dụng.`,
+  prerequisites: [order === 4 ? firstExtraPrerequisite[domain] : `${domain}.${order - 1}`], related: [],
+  sections: [['Hiểu nhanh', `Chủ đề này bao gồm ${title.toLowerCase()}.`]],
+  takeaway: `Bạn biết xác định vấn đề và quyết định liên quan đến ${title.toLowerCase()}.`,
+}));
+
 export const nodes = [...legacyNodes.filter(node => node.domain !== 'foundation').map(node => ({ ...node,
   prerequisites: node.prerequisites.filter(id => !id.startsWith('foundation.')),
   related: node.related.filter(id => !id.startsWith('foundation.')),
-})), ...outlineNodes];
+})), ...outlineNodes, ...extraNodes];
 
 export const nodeById = Object.fromEntries(nodes.map(node => [node.id, node]));
 export const domainById = Object.fromEntries(domains.map(domain => [domain.id, domain]));
@@ -129,20 +163,20 @@ const englishOutlines = {
   security: ['Threat modeling and trust boundaries', 'Identity, authentication, and sessions', 'Authorization by action and object', 'Inputs, outputs, and API attack surface', 'Secrets, cryptography, and key lifecycle', 'Software supply chain and secure development', 'Logging, detection, and incident response', 'Security verification and risk decisions'],
   clean_code: ['Names, intent, and focused functions', 'Managing complexity and errors', 'Refactoring and Clean Code trade-offs'],
   design_patterns: ['Patterns as responses to design forces', 'Dependency Injection and Strategy', 'Factory, Builder, and object creation', 'Adapter, Facade, Decorator, and Proxy', 'Observer, Command, and State', 'Patterns at system boundaries', 'Choosing patterns and spotting misuse'],
-  backend: ['How does an HTTP request travel?', 'Design an API that is easy to use', 'Authentication and authorization'],
-  data: ['Data modeling; SQL; PostgreSQL', 'Indexes; transactions; migrations', 'NoSQL; search; backup and restore'],
-  devops: ['Linux; shell; networking; containers', 'CI/CD; deployment; IaC; cloud; Kubernetes', 'Logs; metrics; incidents; cost'],
-  system_design: ['Requirements; estimation; scale', 'Consistency; reliability; service communication', 'Failure modes and trade-offs'],
-  architecture: ['System boundaries; modeling; patterns', 'C4 and Architecture Decision Records', 'System quality, trade-offs, and decisions'],
-  ba: ['Stakeholders and problem discovery', 'Elicitation; processes; requirements; modeling', 'Validation and change management'],
-  po: ['Product Goal and backlog', 'Value, prioritization, and splitting work', 'Acceptance criteria and team collaboration'],
-  product: ['Define the right problem', 'Understand user needs', 'Prioritize by value'],
-  project: ['Scope; plans; dependencies', 'Resources; risks; communication', 'Project tracking and adjustment'],
-  ux: ['User research and task flows', 'Information architecture; interaction; prototypes', 'Usability and accessibility'],
-  ui: ['Visual hierarchy; layout; typography', 'Color; states; responsive design', 'Components and design systems'],
-  ai: ['What can an LLM do and where are its limits?', 'Provide useful context to AI', 'Evaluate AI output'],
-  ai_roles: ['AI for Developers, BA, and PO', 'AI for Product and Project Managers, UI/UX, and QA', 'AI for DevOps and Software Architects'],
-  senior: ['Clarifying ambiguity; writing and communication', 'Critical thinking; decisions; mentoring', 'Leading change and responding to incidents'],
+  backend: ['How does an HTTP request travel?', 'Design an API that is easy to use', 'Authentication and authorization', 'Concurrency, transactions, and idempotency', 'Caching and data correctness', 'Queues and background jobs', 'Rate limits and resilience', 'Observability and performance', 'Compatible API evolution'],
+  data: ['Data modeling and invariants', 'SQL and the relational model', 'Indexes and execution plans', 'Transactions and concurrency', 'Zero-downtime migrations', 'Operating PostgreSQL', 'When to choose NoSQL', 'Search and derived data', 'Backup, restore, and verification'],
+  devops: ['Linux and shell for operations', 'DNS, TCP, and TLS', 'Containers and images', 'CI and change verification', 'Deployment and rollback', 'Infrastructure as Code', 'Cloud, IAM, and networking', 'Kubernetes and orchestration', 'SLOs, metrics, logs, and traces', 'Incidents, toil, and cost'],
+  system_design: ['Requirements and quality attributes', 'Traffic and capacity estimation', 'Data, caching, and partitioning', 'Synchronous and asynchronous communication', 'Consistency and distributed transactions', 'Scaling and bottlenecks', 'Reliability and failure modes', 'Trade-offs and design verification'],
+  architecture: ['Architectural context and constraints', 'Boundaries and dependencies', 'Cohesion, coupling, and modules', 'Modeling with C4', 'Architecture Decision Records', 'Quality attributes', 'Architecture evolution and evaluation'],
+  ba: ['Stakeholders and problem scope', 'Discovering current processes', 'Elicitation and evidence', 'Modeling requirements', 'Functional and nonfunctional requirements', 'Validation and acceptance', 'Traceability and change management'],
+  po: ['Product Goal and value', 'An actionable Product Backlog', 'Ordering and opportunity cost', 'Splitting work and refinement', 'Acceptance criteria and quality', 'Sprints and team collaboration', 'Measuring outcomes and adapting'],
+  product: ['Define the right problem', 'Understand user needs', 'Prioritize by value', 'Product strategy and positioning', 'Value and business models', 'Outcome-based roadmaps', 'Product metrics and analysis', 'Experiments and market learning'],
+  project: ['Goals, scope, and success', 'Planning and dependencies', 'Estimation and uncertainty', 'Resources and capacity', 'Risks and responses', 'Stakeholder communication', 'Tracking, forecasting, and adjustment', 'Closure and learning'],
+  ux: ['User research', 'Tasks, journeys, and needs', 'Information architecture', 'Interaction and feedback', 'Prototypes and hypothesis testing', 'Usability testing', 'Accessibility in experience design'],
+  ui: ['Visual hierarchy', 'Layout and spacing', 'Interface typography', 'Color and contrast', 'States and feedback', 'Responsive and multi-device design', 'Components and design systems'],
+  ai: ['What can an LLM do and where are its limits?', 'Provide useful context to AI', 'Evaluate AI output', 'Choosing AI models and tools', 'Private knowledge, retrieval, and RAG', 'AI coding and code verification', 'Agents and tool use', 'Coordinating multiple agents', 'MCP, connectors, plugins, and skills', 'Workflows and automation', 'Evaluating AI systems', 'AI data, access, cost, and risk'],
+  ai_roles: ['AI for Developers', 'AI for QA', 'AI for Business Analysts', 'AI for Product Owners', 'AI for Product Managers', 'AI for Project Managers', 'AI for UX and UI', 'AI for DevOps and Architects'],
+  senior: ['Clarifying ambiguous problems', 'Technical writing and communication', 'Evidence-based challenge', 'Decision making and rationale', 'Mentoring and review', 'Cross-team collaboration', 'Leading change', 'Incident response and learning'],
 };
 const vietnameseDomains = domains.map(domain => ({ ...domain }));
 const vietnameseNodes = nodes.map(node => ({ ...node }));
@@ -173,8 +207,8 @@ export function setContentLanguage(language) {
       ];
       node.takeaway = `You know what to ask before studying ${title.toLowerCase()} in depth.`;
     }
-    const lesson = cleanCodeLessons[node.id]?.[language] ?? securityLessons[node.id]?.[language] ?? designPatternLessons[node.id]?.[language];
+    const lesson = cleanCodeLessons[node.id]?.[language] ?? securityLessons[node.id]?.[language] ?? designPatternLessons[node.id]?.[language] ?? backendLessons[node.id]?.[language] ?? productLessons[node.id]?.[language] ?? aiLessons[node.id]?.[language];
     if (lesson) Object.assign(node, lesson);
-    node.contentStatus = lesson ? 'full' : 'outline';
+    node.contentStatus = !lesson ? 'outline' : cleanCodeLessons[node.id] || node.id === 'security.1' || node.id === 'product.problem' || node.id === 'ai.llm' ? 'full' : 'draft';
   });
 }

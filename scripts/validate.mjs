@@ -1,5 +1,5 @@
 import { readFileSync } from 'node:fs';
-import { domains, nodes } from '../src/data.js';
+import { domains, nodes, setContentLanguage } from '../src/data.js';
 
 const errors = [];
 const domainIds = new Set(domains.map(domain => domain.id));
@@ -40,6 +40,21 @@ function visit(id, path = []) {
   visited.add(id);
 }
 for (const id of nodeIds) visit(id);
+
+setContentLanguage('vi');
+const vietnameseLessons = new Map(nodes.filter(node => node.contentStatus !== 'outline').map(node => [node.id, {
+  title: node.title,
+  sections: node.sections.map(([heading, body]) => [heading, body]),
+}]));
+setContentLanguage('en');
+for (const node of nodes.filter(node => node.contentStatus !== 'outline')) {
+  const vi = vietnameseLessons.get(node.id);
+  if (!vi) { errors.push(`${node.id}: thiếu bản tiếng Việt`); continue; }
+  if (!node.title?.trim() || node.title === vi.title) errors.push(`${node.id}: thiếu tiêu đề tiếng Anh riêng`);
+  if (node.sections.length !== vi.sections.length) errors.push(`${node.id}: số mục Việt/Anh không tương đương`);
+  if (!node.sections.at(-1)?.[1]?.includes('href=') || !vi.sections.at(-1)?.[1]?.includes('href=')) errors.push(`${node.id}: thiếu nguồn trực tiếp ở một ngôn ngữ`);
+}
+setContentLanguage('vi');
 
 const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
 if (!html.includes('./styles.css') || !html.includes('./src/app.js')) errors.push('index.html thiếu đường dẫn asset tương đối');
