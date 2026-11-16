@@ -211,7 +211,19 @@ function panel() {
   const id = state.panel.split(':')[1], node = nodeById[id], missing = node.prerequisites.filter(pid => state.progress[pid]?.status !== 'mastered');
   return `<div class="modal-backdrop" data-close="true"><section class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title"><button class="modal-close icon-button" data-action="close" aria-label="${tr('Đóng','Close')}">${icon('close')}</button><span class="lock-icon">${icon('lock',24)}</span><span class="eyebrow dark">MỐC CHƯA MỞ</span><h2 id="modal-title">${node.title}</h2><p>Để bắt đầu mốc này, hãy đánh dấu đã nắm các tiền đề bắt buộc bên dưới.</p><div class="missing-list">${missing.map(pid => `<button data-node="${pid}"><span><small>TIỀN ĐỀ CẦN HỌC</small><strong>${nodeById[pid].title}</strong><em>${domainById[nodeById[pid].domain].title}</em></span>${icon('arrow',19)}</button>`).join('')}</div><p class="modal-fine">Bạn có thể mở mốc tiền đề để học hoặc tự đánh dấu nếu đã nắm kiến thức đó.</p></section></div>`;
 }
-function render() { app.innerHTML = shell(state.view === 'lesson' ? lessonView() : roadmapView()); if (state.language === 'en') translateInterface(app); document.documentElement.lang = state.language; document.documentElement.dataset.theme = state.theme; document.querySelector('meta[name="theme-color"]')?.setAttribute('content', state.theme === 'light' ? '#f4f6f8' : '#0b1116'); if(state.view !== 'lesson') requestAnimationFrame(mountMap); if(state.panel) requestAnimationFrame(()=>(document.querySelector('.modal input')||document.querySelector('.modal button'))?.focus()); document.title = `${state.view === 'lesson' ? nodeById[state.node].title + ' — ' : ''}Knowledge Map`; }
+function render() {
+  const sidebarScrollTop = app.querySelector('.sidebar')?.scrollTop ?? 0;
+  app.innerHTML = shell(state.view === 'lesson' ? lessonView() : roadmapView());
+  if (state.language === 'en') translateInterface(app);
+  document.documentElement.lang = state.language;
+  document.documentElement.dataset.theme = state.theme;
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', state.theme === 'light' ? '#f4f6f8' : '#0b1116');
+  const sidebar = app.querySelector('.sidebar');
+  if (sidebar) sidebar.scrollTop = sidebarScrollTop;
+  if(state.view !== 'lesson') requestAnimationFrame(mountMap);
+  if(state.panel) requestAnimationFrame(()=>(document.querySelector('.modal input')||document.querySelector('.modal button'))?.focus());
+  document.title = `${state.view === 'lesson' ? nodeById[state.node].title + ' — ' : ''}Knowledge Map`;
+}
 function setStatus(id, value) { if (!value) delete state.progress[id]; else state.progress[id] = { status: value, updatedAt: new Date().toISOString() }; persist(); render(); }
 function exportProgress() { const file = new Blob([JSON.stringify({schemaVersion:1,nodes:state.progress}, null, 2)], {type:'application/json'}); const url=URL.createObjectURL(file); const a=document.createElement('a'); a.href=url; a.download='knowledge-map-progress.json'; a.click(); setTimeout(()=>URL.revokeObjectURL(url),1000); }
 async function previewImport(file) {
