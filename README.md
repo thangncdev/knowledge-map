@@ -2,14 +2,11 @@
 
 Prototype để duyệt hướng thiết kế trước khi triển khai đầy đủ theo [kế hoạch](./knowledge-map-plan.md). Bản này có đúng hai kiểu màn hình: map kiến thức (toàn cảnh và theo lĩnh vực) và trang chi tiết mốc.
 
+**Website:** https://thangncdev.github.io/knowledge-map/
+
 ## Triển khai bằng GitHub Pages
 
-Repository này đã có workflow [`.github/workflows/pages.yml`](./.github/workflows/pages.yml). Workflow kiểm tra ID, tham chiếu và vòng lặp tiền đề, dựng `dist/`, rồi deploy khi push lên `main`. Pull request chỉ chạy kiểm tra và build, không xuất bản.
-
-1. Tạo repository GitHub công khai và đẩy **nội dung của thư mục này** lên nhánh `main` (để `.github/workflows/pages.yml` nằm ở gốc repository).
-2. Trong repository, vào **Settings → Pages → Build and deployment → Source**, chọn **GitHub Actions**.
-3. Mở tab **Actions** để xem lượt chạy đầu. Khi thành công, URL sẽ có dạng `https://<username>.github.io/<repository>/` (hoặc URL tên miền riêng nếu đã cấu hình).
-4. Từ đó, mỗi lần push `main` sẽ tự kiểm tra và deploy. Trên pull request, workflow chạy kiểm tra trước khi merge.
+Workflow [`.github/workflows/pages.yml`](./.github/workflows/pages.yml) kiểm tra ID, tham chiếu và vòng lặp tiền đề, dựng `dist/`, rồi deploy lên GitHub Pages khi push vào `main`. Pull request chỉ chạy kiểm tra và build, không xuất bản. Xem trạng thái tại [GitHub Actions](https://github.com/thangncdev/knowledge-map/actions).
 
 Build thủ công: `node scripts/validate.mjs && node scripts/build.mjs`. Website dùng đường dẫn asset tương đối và hash route nên hoạt động dưới đường dẫn con của GitHub Pages.
 
