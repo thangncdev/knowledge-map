@@ -1,8 +1,11 @@
-import { domains, nodes, nodeById, domainById } from './data.js';
+import { domains, nodes, nodeById, domainById, setContentLanguage } from './data.js';
+import { translateInterface } from './locale.js';
 
 const STORAGE_KEY = 'knowledge-map-progress-v1';
+const LANGUAGE_KEY = 'knowledge-map-language';
 const app = document.querySelector('#app');
-const state = { progress: loadProgress(), view: 'overview', domain: null, node: null, panel: null, listMode: false, mobileNav: false };
+const state = { progress: loadProgress(), language: localStorage.getItem(LANGUAGE_KEY) === 'en' ? 'en' : 'vi', view: 'overview', domain: null, node: null, panel: null, listMode: false, mobileNav: false };
+setContentLanguage(state.language);
 
 function loadProgress() {
   try {
@@ -61,14 +64,14 @@ function shell(content) {
       ${domains.map(d => `<button data-domain="${d.id}" class="side-link ${state.domain === d.id ? 'active' : ''}"><span class="side-domain-icon ${d.color}">${d.icon}</span><span>${d.title}</span></button>`).join('')}</nav>
       <div class="side-bottom"><div class="side-progress-label"><span>YOUR_PROGRESS</span><strong>${completed()}/${total}</strong></div><div class="progress-track"><span style="width:${completed()/total*100}%"></span></div><p>Tiến độ lưu trên trình duyệt của bạn.</p><button class="side-transfer" data-panel="transfer">${icon('download',17)} Export / Import</button></div>
     </aside>${state.mobileNav ? `<button class="mobile-scrim" data-action="mobile-nav" aria-label="Đóng menu"></button>` : ''}
-    <div class="main-column"><header class="topbar"><button class="mobile-menu icon-button" data-action="mobile-nav" aria-label="${state.mobileNav ? 'Đóng' : 'Mở'} menu" aria-expanded="${state.mobileNav}">${icon('menu')}</button><div class="topbar-path"><span class="prompt-char">~</span><span>/ roadmap</span>${state.domain ? `<span class="slash">/</span><strong>${escapeHtml(domainById[state.domain]?.title || '')}</strong>` : ''}</div><div class="topbar-right"><span class="prototype-pill"><span></span> PROTOTYPE V0.1</span><button class="topbar-progress" data-panel="transfer">${icon('download',16)} <span>Tiến độ</span></button></div></header><main id="main-content">${content}</main></div>
+    <div class="main-column"><header class="topbar"><button class="mobile-menu icon-button" data-action="mobile-nav" aria-label="${state.mobileNav ? 'Đóng' : 'Mở'} menu" aria-expanded="${state.mobileNav}">${icon('menu')}</button><div class="topbar-path"><span class="prompt-char">~</span><span>/ roadmap</span>${state.domain ? `<span class="slash">/</span><strong>${escapeHtml(domainById[state.domain]?.title || '')}</strong>` : ''}</div><div class="topbar-right"><button class="language-switch" data-action="language" aria-label="${state.language === 'vi' ? 'Switch to English' : 'Chuyển sang Tiếng Việt'}">${state.language === 'vi' ? 'EN' : 'VI'}</button><span class="prototype-pill"><span></span> PROTOTYPE V0.1</span><button class="topbar-progress" data-panel="transfer">${icon('download',16)} <span>Tiến độ</span></button></div></header><main id="main-content">${content}</main></div>
     ${state.panel ? panel() : ''}
   </div>`;
 }
 function overview() {
-  return `<div class="page overview-page"><div class="page-intro"><div class="terminal-bar"><span class="terminal-dots"><i></i><i></i><i></i></span><span>~/knowledge-map/roadmap</span><span class="terminal-mode">● LIVE</span></div><div class="intro-content"><span class="eyebrow">$ knowledge-map --start</span><h1>Build your<br><em>knowledge graph<span class="cursor">_</span></em></h1><p>Một roadmap cho lập trình, sản phẩm và AI. Đi từ nền tảng đến ứng dụng, thấy rõ tiền đề và tự đánh dấu những gì bạn đã nắm.</p><div class="hero-command"><span>$</span> chọn lĩnh vực bên dưới để bắt đầu <span class="cursor">_</span></div></div><div class="intro-art" aria-hidden="true"><div class="graph-node graph-a">01</div><div class="graph-node graph-b">02</div><div class="graph-node graph-c">03</div><div class="graph-node graph-d">04</div><div class="graph-line line-a"></div><div class="graph-line line-b"></div><div class="graph-line line-c"></div></div></div>
+  return `<div class="page overview-page"><div class="page-intro"><div class="terminal-bar"><span class="terminal-dots"><i></i><i></i><i></i></span><span>~/knowledge-map/roadmap</span><span class="terminal-mode">● LIVE</span></div><div class="intro-content"><span class="eyebrow">$ knowledge-map --start</span><h1>Build your<br><em>knowledge graph<span class="cursor">_</span></em></h1><p>Khám phá ${domains.length} lĩnh vực về kỹ thuật, sản phẩm, AI và năng lực phối hợp. Chọn nhánh cần tìm hiểu rồi đi sâu theo nhu cầu của bạn.</p><div class="hero-command"><span>$</span> chọn lĩnh vực bên dưới để bắt đầu <span class="cursor">_</span></div></div><div class="intro-art" aria-hidden="true"><div class="graph-node graph-a">01</div><div class="graph-node graph-b">02</div><div class="graph-node graph-c">03</div><div class="graph-node graph-d">04</div><div class="graph-line line-a"></div><div class="graph-line line-b"></div><div class="graph-line line-c"></div></div></div>
     <section class="overview-stats" aria-label="Tổng quan tiến độ"><div><span class="stat-symbol">01</span><strong>${domains.length}<small> lĩnh vực</small></strong></div><div><span class="stat-symbol">02</span><strong>${nodes.length}<small> mốc kiến thức</small></strong></div><div><span class="stat-symbol">03</span><strong>${completed()}<small> đã nắm</small></strong></div><p><span class="prompt-char">›</span> Mỗi mốc chỉ khóa khi có tiền đề thật sự bắt buộc.</p></section>
-    <div class="section-heading"><div><span class="eyebrow dark">// ROADMAP OVERVIEW</span><h2>Chọn nhánh để khám phá</h2></div><span class="section-hint">04 tracks · ${nodes.length} nodes</span></div>
+    <div class="section-heading"><div><span class="eyebrow dark">// ROADMAP OVERVIEW</span><h2>Chọn nhánh để khám phá</h2></div><span class="section-hint">${domains.length} tracks · ${nodes.length} nodes</span></div>
     <div class="domain-grid">${domains.map((d, i) => `<button class="domain-card ${d.color}" data-domain="${d.id}"><span class="domain-card-top"><span class="domain-symbol">${d.icon}</span><span class="domain-index">TRACK_${String(i+1).padStart(2,'0')}</span></span><span class="domain-copy"><span class="domain-eyebrow">${d.eyebrow}</span><strong>${d.title}</strong><span>${d.description}</span></span><span class="mini-path" aria-hidden="true"><i class="${status(domainNodes(d.id)[0])}"></i><b></b><i class="${status(domainNodes(d.id)[1])}"></i><b></b><i class="${status(domainNodes(d.id)[2])}"></i><span>${completed(d.id)}/3 completed</span></span><span class="domain-card-footer">Mở nhánh roadmap <span>${icon('arrow',18)}</span></span></button>`).join('')}</div>
     <div class="overview-note"><span>&gt;_</span><p><strong>Học theo nhịp của bạn.</strong> Đọc mốc đã mở, tự đánh dấu phần quen thuộc và quay lại bất cứ lúc nào.</p></div></div>`;
 }
@@ -95,7 +98,7 @@ function panel() {
   const id = state.panel.split(':')[1], node = nodeById[id], missing = node.prerequisites.filter(pid => state.progress[pid]?.status !== 'mastered');
   return `<div class="modal-backdrop" data-close="true"><section class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title"><button class="modal-close icon-button" data-action="close" aria-label="Đóng">${icon('close')}</button><span class="lock-icon">${icon('lock',24)}</span><span class="eyebrow dark">MỐC CHƯA MỞ</span><h2 id="modal-title">${node.title}</h2><p>Để bắt đầu mốc này, hãy đánh dấu đã nắm các tiền đề bắt buộc bên dưới.</p><div class="missing-list">${missing.map(pid => `<button data-node="${pid}"><span><small>TIỀN ĐỀ CẦN HỌC</small><strong>${nodeById[pid].title}</strong><em>${domainById[nodeById[pid].domain].title}</em></span>${icon('arrow',19)}</button>`).join('')}</div><p class="modal-fine">Bạn có thể mở mốc tiền đề để học hoặc tự đánh dấu nếu đã nắm kiến thức đó.</p></section></div>`;
 }
-function render() { app.innerHTML = shell(state.view === 'overview' ? overview() : state.view === 'domain' ? domainView() : lessonView()); document.title = `${state.view === 'lesson' ? nodeById[state.node].title + ' — ' : ''}Knowledge Map`; }
+function render() { app.innerHTML = shell(state.view === 'overview' ? overview() : state.view === 'domain' ? domainView() : lessonView()); if (state.language === 'en') translateInterface(app); document.documentElement.lang = state.language; document.title = `${state.view === 'lesson' ? nodeById[state.node].title + ' — ' : ''}Knowledge Map`; }
 function setStatus(id, value) { if (!value) delete state.progress[id]; else state.progress[id] = { status: value, updatedAt: new Date().toISOString() }; persist(); render(); }
 function exportProgress() { const file = new Blob([JSON.stringify({schemaVersion:1,nodes:state.progress}, null, 2)], {type:'application/json'}); const url=URL.createObjectURL(file); const a=document.createElement('a'); a.href=url; a.download='knowledge-map-progress.json'; a.click(); setTimeout(()=>URL.revokeObjectURL(url),1000); }
 async function previewImport(file) {
@@ -107,8 +110,9 @@ async function previewImport(file) {
     const mastered = valid.filter(([,entry])=>entry.status==='mastered').length;
     const unknown = Object.keys(raw.nodes).length-valid.length;
     target.innerHTML = `<div class="import-preview"><strong>Tìm thấy ${valid.length} mốc hợp lệ</strong><p>${mastered} mốc đã nắm${unknown ? ` · ${unknown} mục không hợp lệ hoặc không còn trong bản đồ sẽ được bỏ qua` : ''}. Nhập sẽ thay thế tiến độ hiện tại.</p><button class="primary-button" data-action="confirm-import">Xác nhận nhập</button></div>`;
+    if (state.language === 'en') translateInterface(target);
     state.pendingImport = Object.fromEntries(valid);
-  } catch (error) { state.pendingImport = null; target.innerHTML = `<div class="import-error" role="alert">${escapeHtml(error.message)}</div>`; }
+  } catch (error) { state.pendingImport = null; target.innerHTML = `<div class="import-error" role="alert">${escapeHtml(error.message)}</div>`; if (state.language === 'en') translateInterface(target); }
 }
 app.addEventListener('click', event => {
   const sectionLink = event.target.closest('a[href^="#section-"]');
@@ -120,6 +124,7 @@ app.addEventListener('click', event => {
   if (target.dataset.panel) { state.panel=target.dataset.panel; return render(); }
   if (target.dataset.close && event.target === target) { state.panel=null; return render(); }
   const action=target.dataset.action;
+  if (action==='language') { state.language = state.language === 'vi' ? 'en' : 'vi'; localStorage.setItem(LANGUAGE_KEY, state.language); setContentLanguage(state.language); return render(); }
   if (action==='close') { state.panel=null; return render(); }
   if (action==='toggle-list') { state.listMode=!state.listMode; return render(); }
   if (action==='mobile-nav') { state.mobileNav=!state.mobileNav; return render(); }

@@ -2,6 +2,8 @@
 
 > Bản đặc tả để giao Codex xây dựng một repository GitHub công khai gồm kiến thức và website học tập. Ngày chốt: 16/11/2026. Các quyết định trong tài liệu này ưu tiên hơn những đề xuất cũ trong hội thoại.
 
+> Cập nhật phạm vi: danh mục hiện hành gồm 17 lĩnh vực theo mục 3; website hỗ trợ tiếng Việt và tiếng Anh, dùng chung ID mốc và tiến độ giữa hai ngôn ngữ.
+
 ## 1. Mục tiêu và nguyên tắc
 
 Xây một bản đồ kiến thức lập trình, xây dựng sản phẩm và sử dụng AI. Người mới có thể đi từ nền tảng; người đã có kinh nghiệm có thể lướt qua phần quen thuộc và đào sâu chỗ cần thiết. Nội dung phải súc tích, dễ hiểu, đủ rộng, có nguồn chọn lọc và nêu được khi nào một kiến thức có ích, các đánh đổi, điều dễ hiểu sai.
@@ -33,12 +35,9 @@ Taxonomy sau là khung mở rộng. Mỗi dòng là một lĩnh vực/cụm, kh�
 
 | Khối | Lĩnh vực | Các cụm chủ đề ban đầu |
 | --- | --- | --- |
-| Nền tảng | Nhập môn lập trình | Chương trình chạy thế nào; dữ liệu và kiểu; điều khiển luồng; hàm; debug; terminal; Git |
-| Nền tảng | Khoa học máy tính | Cấu trúc dữ liệu; thuật toán và độ phức tạp; bộ nhớ; hệ điều hành; tiến trình/luồng; mạng; HTTP/DNS/TLS |
-| Nền tảng | Kỹ nghệ phần mềm | Thiết kế module; refactoring; testing; code review; quản lý phụ thuộc; tài liệu; cộng tác |
 | Nền tảng | Bảo mật | Threat modeling; phân quyền; secret; bảo mật ứng dụng/API; chuỗi cung ứng; nguyên lý mật mã cần thiết |
-| Xây dựng hệ thống | Web/frontend | HTML/CSS; JavaScript/TypeScript; trình duyệt; React; state; accessibility; hiệu năng |
-| Xây dựng hệ thống | Mobile | Android/iOS; lifecycle; React Native; Flutter; kiến trúc; state/navigation; offline; performance; native integration; test; phát hành |
+| Nền tảng | Clean Code | Tên và ý định; hàm và trách nhiệm; độ phức tạp; lỗi; refactoring; đánh đổi |
+| Nền tảng | Design Patterns | Bài toán lặp lại; composition; dependency injection; nhóm tạo lập, cấu trúc và hành vi; áp dụng sai pattern |
 | Xây dựng hệ thống | Backend/API | Thiết kế API; auth; xử lý đồng thời; cache; queue; background jobs; rate limit; observability; performance |
 | Xây dựng hệ thống | Dữ liệu | Mô hình dữ liệu; SQL; index; transaction; migration; PostgreSQL; NoSQL; tìm kiếm; backup/restore |
 | Xây dựng hệ thống | DevOps/cloud | Linux; shell; network; container; CI/CD; triển khai; IaC; cloud; Kubernetes; logging/metrics; incident; chi phí |

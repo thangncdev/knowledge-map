@@ -1,11 +1,24 @@
 export const domains = [
-  { id: 'foundation', icon: '◇', eyebrow: '01 / NỀN TẢNG', title: 'Nền tảng lập trình', description: 'Hiểu chương trình, dữ liệu và cách chia nhỏ vấn đề.', color: 'mint', stage: 'Bắt đầu từ bản chất' },
-  { id: 'backend', icon: '⌘', eyebrow: '02 / XÂY DỰNG HỆ THỐNG', title: 'Backend & API', description: 'Từ một request đến một hệ thống đáng tin cậy.', color: 'blue', stage: 'Kết nối các hệ thống' },
-  { id: 'product', icon: '✳', eyebrow: '03 / XÂY DỰNG SẢN PHẨM', title: 'Tư duy sản phẩm', description: 'Tìm đúng vấn đề trước khi chọn giải pháp.', color: 'peach', stage: 'Hiểu người dùng' },
-  { id: 'ai', icon: '✦', eyebrow: '04 / AI TRONG CÔNG VIỆC', title: 'Làm việc cùng AI', description: 'Dùng AI có mục đích, có ngữ cảnh và biết kiểm chứng.', color: 'lavender', stage: 'Sử dụng có chủ đích' },
+  { id: 'security', icon: '◇', eyebrow: 'NỀN TẢNG', title: 'Bảo mật', description: 'Nhận diện rủi ro và bảo vệ dữ liệu, quyền truy cập.', color: 'mint', stage: 'Bảo vệ từ thiết kế' },
+  { id: 'clean_code', icon: '⌁', eyebrow: 'NỀN TẢNG', title: 'Clean Code', description: 'Viết mã rõ ý định, dễ sửa và kiểm chứng.', color: 'blue', stage: 'Làm rõ ý định' },
+  { id: 'design_patterns', icon: '▣', eyebrow: 'NỀN TẢNG', title: 'Design Patterns', description: 'Nhận diện giải pháp lặp lại và đánh đổi của chúng.', color: 'peach', stage: 'Chọn cấu trúc phù hợp' },
+  { id: 'backend', icon: '⌘', eyebrow: 'XÂY DỰNG HỆ THỐNG', title: 'Backend & API', description: 'Từ một request đến một hệ thống đáng tin cậy.', color: 'blue', stage: 'Kết nối các hệ thống' },
+  { id: 'data', icon: '▤', eyebrow: 'XÂY DỰNG HỆ THỐNG', title: 'Dữ liệu', description: 'Mô hình, truy vấn, bảo toàn và khôi phục dữ liệu.', color: 'mint', stage: 'Dữ liệu có ý nghĩa' },
+  { id: 'devops', icon: '☁', eyebrow: 'XÂY DỰNG HỆ THỐNG', title: 'DevOps & Cloud', description: 'Triển khai, quan sát và vận hành dịch vụ.', color: 'lavender', stage: 'Vận hành tin cậy' },
+  { id: 'system_design', icon: '◎', eyebrow: 'XÂY DỰNG HỆ THỐNG', title: 'System Design', description: 'Thiết kế cho tải, lỗi và thay đổi.', color: 'peach', stage: 'Giải quyết ràng buộc' },
+  { id: 'architecture', icon: '▥', eyebrow: 'XÂY DỰNG HỆ THỐNG', title: 'Software Architecture', description: 'Định ranh giới và quyết định chất lượng hệ thống.', color: 'blue', stage: 'Ra quyết định' },
+  { id: 'ba', icon: '✳', eyebrow: 'XÂY DỰNG SẢN PHẨM', title: 'Business Analysis (BA)', description: 'Làm rõ vấn đề, quy trình và yêu cầu.', color: 'peach', stage: 'Hiểu vấn đề' },
+  { id: 'po', icon: '◈', eyebrow: 'XÂY DỰNG SẢN PHẨM', title: 'Product Ownership (PO)', description: 'Định mục tiêu và sắp xếp backlog có giá trị.', color: 'mint', stage: 'Ưu tiên cùng team' },
+  { id: 'product', icon: '✳', eyebrow: 'XÂY DỰNG SẢN PHẨM', title: 'Product Management', description: 'Tìm cơ hội và đánh giá outcome sản phẩm.', color: 'peach', stage: 'Hiểu người dùng' },
+  { id: 'project', icon: '▧', eyebrow: 'XÂY DỰNG SẢN PHẨM', title: 'Project Management', description: 'Quản lý phạm vi, nguồn lực, rủi ro và tiến độ.', color: 'blue', stage: 'Điều phối thực hiện' },
+  { id: 'ux', icon: '◌', eyebrow: 'XÂY DỰNG SẢN PHẨM', title: 'UX', description: 'Thiết kế luồng tác vụ từ nhu cầu người dùng.', color: 'lavender', stage: 'Thiết kế trải nghiệm' },
+  { id: 'ui', icon: '◐', eyebrow: 'XÂY DỰNG SẢN PHẨM', title: 'UI', description: 'Tạo giao diện rõ ràng, nhất quán và thích ứng.', color: 'peach', stage: 'Thiết kế giao diện' },
+  { id: 'ai', icon: '✦', eyebrow: 'AI TRONG CÔNG VIỆC', title: 'Nền tảng và vận hành AI', description: 'Dùng AI có ngữ cảnh và biết kiểm chứng.', color: 'lavender', stage: 'Sử dụng có chủ đích' },
+  { id: 'ai_roles', icon: '✧', eyebrow: 'AI TRONG CÔNG VIỆC', title: 'AI theo vai trò', description: 'Ứng dụng AI theo trách nhiệm và rủi ro từng vai trò.', color: 'mint', stage: 'Áp dụng vào công việc' },
+  { id: 'senior', icon: '✶', eyebrow: 'NĂNG LỰC PHỐI HỢP', title: 'Năng lực senior', description: 'Làm rõ, quyết định, dẫn dắt và xử lý sự cố.', color: 'blue', stage: 'Dẫn dắt hiệu quả' },
 ];
 
-export const nodes = [
+const legacyNodes = [
   { id: 'foundation.program', domain: 'foundation', order: 1, title: 'Chương trình chạy thế nào?', duration: '6 phút', level: 'Nền tảng', summary: 'Từ mã nguồn đến những bước máy tính thực hiện.', prerequisites: [], related: ['foundation.data', 'backend.http'], sections: [
     ['Hiểu nhanh', 'Một chương trình là tập hợp chỉ dẫn được thực thi trong một môi trường. Mã nguồn cần được diễn giải hoặc chuyển đổi trước khi máy tính có thể chạy. Dữ liệu đi vào, được xử lý, rồi tạo ra kết quả.'],
     ['Vì sao cần hiểu?', 'Khi một tính năng không hoạt động, hãy lần theo ba điểm: đầu vào là gì, bước xử lý nào đã diễn ra, và kết quả thực tế khác mong đợi ở đâu. Cách nghĩ này hữu ích hơn việc đoán lỗi từ giao diện.'],
@@ -68,5 +81,93 @@ export const nodes = [
   ], takeaway: 'Bạn chọn được cách kiểm chứng tương xứng với rủi ro.' },
 ];
 
+const outlines = {
+  security: ['Threat modeling; xác thực và phân quyền', 'Secret; bảo mật ứng dụng và API', 'Chuỗi cung ứng; nguyên lý mật mã'],
+  clean_code: ['Tên, ý định và hàm có trách nhiệm rõ', 'Kiểm soát độ phức tạp và xử lý lỗi', 'Refactoring và đánh đổi của Clean Code'],
+  design_patterns: ['Bài toán lặp lại; composition; dependency injection', 'Nhóm pattern tạo lập và cấu trúc', 'Nhóm pattern hành vi; nhận diện áp dụng sai'],
+  data: ['Mô hình dữ liệu; SQL; PostgreSQL', 'Index; transaction; migration', 'NoSQL; tìm kiếm; backup và restore'],
+  devops: ['Linux; shell; network; container', 'CI/CD; triển khai; IaC; cloud; Kubernetes', 'Logging; metrics; incident; chi phí'],
+  system_design: ['Yêu cầu; ước lượng; scale', 'Consistency; reliability; giao tiếp dịch vụ', 'Failure modes và trade-offs'],
+  architecture: ['Ranh giới hệ thống; mô hình hóa; patterns', 'C4 và Architecture Decision Records', 'Chất lượng hệ thống; đánh đổi và ra quyết định'],
+  ba: ['Stakeholder và khám phá vấn đề', 'Elicitation; quy trình; yêu cầu; mô hình hóa', 'Xác nhận và quản lý thay đổi'],
+  po: ['Product Goal và backlog', 'Giá trị; ưu tiên; chia nhỏ công việc', 'Acceptance criteria và phối hợp với team'],
+  project: ['Phạm vi; kế hoạch; phụ thuộc', 'Nguồn lực; rủi ro; giao tiếp', 'Theo dõi và điều chỉnh dự án'],
+  ux: ['Nghiên cứu người dùng và luồng tác vụ', 'Kiến trúc thông tin; interaction; prototype', 'Usability và accessibility'],
+  ui: ['Phân cấp thị giác; bố cục; typography', 'Màu sắc; trạng thái; responsive', 'Component và design system'],
+  ai_roles: ['AI cho Developer, BA và PO', 'AI cho Product Manager, Project Manager, UI/UX và QA', 'AI cho DevOps và Software Architect'],
+  senior: ['Làm rõ vấn đề mơ hồ; viết và giao tiếp', 'Phản biện; ra quyết định; mentoring', 'Dẫn dắt thay đổi và xử lý sự cố'],
+};
+
+const outlineNodes = Object.entries(outlines).flatMap(([domain, stages]) => stages.map((title, index) => ({
+  id: `${domain}.${index + 1}`, domain, order: index + 1, title, duration: '5 phút', level: 'Toàn cảnh',
+  summary: `Nhận diện các khái niệm chính của ${title.toLowerCase()} và khi nào chúng hữu ích.`,
+  prerequisites: index ? [`${domain}.${index}`] : [], related: [],
+  sections: [
+    ['Hiểu nhanh', `Chặng này giới thiệu ${title.toLowerCase()}. Hãy xác định vấn đề cần giải quyết, các lựa chọn thường gặp và thông tin còn thiếu trước khi đi sâu vào công cụ cụ thể.`],
+    ['Khi nào cần?', `Bạn sẽ cần nhóm kiến thức này khi công việc liên quan tới ${domains.find(item => item.id === domain).description.toLowerCase()}`],
+    ['Tự kiểm tra', 'Bạn có thể nêu một tình huống thực tế, quyết định cần đưa ra và cách kiểm chứng kết quả không?'],
+  ],
+  takeaway: `Bạn biết đặt câu hỏi đúng trước khi học sâu về ${title.toLowerCase()}.`,
+})));
+
+export const nodes = [...legacyNodes.filter(node => node.domain !== 'foundation').map(node => ({ ...node,
+  prerequisites: node.prerequisites.filter(id => !id.startsWith('foundation.')),
+  related: node.related.filter(id => !id.startsWith('foundation.')),
+})), ...outlineNodes];
+
 export const nodeById = Object.fromEntries(nodes.map(node => [node.id, node]));
 export const domainById = Object.fromEntries(domains.map(domain => [domain.id, domain]));
+
+const englishDomains = {
+  security: ['Security', 'Identify risks and protect data and access.'], clean_code: ['Clean Code', 'Write code with clear intent that is easy to change.'], design_patterns: ['Design Patterns', 'Recognize recurring solutions and their trade-offs.'], backend: ['Backend & APIs', 'From one request to a reliable system.'], data: ['Data', 'Model, query, preserve, and recover data.'], devops: ['DevOps & Cloud', 'Deploy, observe, and operate services.'], system_design: ['System Design', 'Design for load, failure, and change.'], architecture: ['Software Architecture', 'Define boundaries and system quality decisions.'], ba: ['Business Analysis (BA)', 'Clarify problems, processes, and requirements.'], po: ['Product Ownership (PO)', 'Set goals and prioritize a valuable backlog.'], product: ['Product Management', 'Find opportunities and evaluate outcomes.'], project: ['Project Management', 'Manage scope, resources, risks, and delivery.'], ux: ['UX', 'Design task flows around user needs.'], ui: ['UI', 'Create clear, consistent, adaptable interfaces.'], ai: ['AI Foundations & Operations', 'Use AI with context and verification.'], ai_roles: ['AI by Role', 'Apply AI to the responsibilities of each role.'], senior: ['Senior Skills', 'Clarify, decide, lead, and respond to incidents.'],
+};
+const englishOutlines = {
+  security: ['Threat modeling; authentication and authorization', 'Secrets; application and API security', 'Software supply chain; cryptography basics'],
+  clean_code: ['Names, intent, and focused functions', 'Managing complexity and errors', 'Refactoring and Clean Code trade-offs'],
+  design_patterns: ['Recurring problems; composition; dependency injection', 'Creational and structural patterns', 'Behavioral patterns and pattern misuse'],
+  backend: ['How does an HTTP request travel?', 'Design an API that is easy to use', 'Authentication and authorization'],
+  data: ['Data modeling; SQL; PostgreSQL', 'Indexes; transactions; migrations', 'NoSQL; search; backup and restore'],
+  devops: ['Linux; shell; networking; containers', 'CI/CD; deployment; IaC; cloud; Kubernetes', 'Logs; metrics; incidents; cost'],
+  system_design: ['Requirements; estimation; scale', 'Consistency; reliability; service communication', 'Failure modes and trade-offs'],
+  architecture: ['System boundaries; modeling; patterns', 'C4 and Architecture Decision Records', 'System quality, trade-offs, and decisions'],
+  ba: ['Stakeholders and problem discovery', 'Elicitation; processes; requirements; modeling', 'Validation and change management'],
+  po: ['Product Goal and backlog', 'Value, prioritization, and splitting work', 'Acceptance criteria and team collaboration'],
+  product: ['Define the right problem', 'Understand user needs', 'Prioritize by value'],
+  project: ['Scope; plans; dependencies', 'Resources; risks; communication', 'Project tracking and adjustment'],
+  ux: ['User research and task flows', 'Information architecture; interaction; prototypes', 'Usability and accessibility'],
+  ui: ['Visual hierarchy; layout; typography', 'Color; states; responsive design', 'Components and design systems'],
+  ai: ['What can an LLM do and where are its limits?', 'Provide useful context to AI', 'Evaluate AI output'],
+  ai_roles: ['AI for Developers, BA, and PO', 'AI for Product and Project Managers, UI/UX, and QA', 'AI for DevOps and Software Architects'],
+  senior: ['Clarifying ambiguity; writing and communication', 'Critical thinking; decisions; mentoring', 'Leading change and responding to incidents'],
+};
+const vietnameseDomains = domains.map(domain => ({ ...domain }));
+const vietnameseNodes = nodes.map(node => ({ ...node }));
+export function setContentLanguage(language) {
+  domains.forEach((domain, index) => {
+    const original = vietnameseDomains[index];
+    Object.assign(domain, original);
+    if (language === 'en') {
+      domain.title = englishDomains[domain.id][0];
+      domain.description = englishDomains[domain.id][1];
+      domain.eyebrow = ({ security: 'FOUNDATIONS', clean_code: 'FOUNDATIONS', design_patterns: 'FOUNDATIONS', backend: 'BUILDING SYSTEMS', data: 'BUILDING SYSTEMS', devops: 'BUILDING SYSTEMS', system_design: 'BUILDING SYSTEMS', architecture: 'BUILDING SYSTEMS', ba: 'BUILDING PRODUCTS', po: 'BUILDING PRODUCTS', product: 'BUILDING PRODUCTS', project: 'BUILDING PRODUCTS', ux: 'BUILDING PRODUCTS', ui: 'BUILDING PRODUCTS', ai: 'AI AT WORK', ai_roles: 'AI AT WORK', senior: 'COLLABORATION' })[domain.id];
+      domain.stage = 'Explore the essentials';
+    }
+  });
+  nodes.forEach((node, index) => {
+    const original = vietnameseNodes[index];
+    Object.assign(node, original);
+    if (language === 'en') {
+      const title = englishOutlines[node.domain][node.order - 1];
+      node.title = title;
+      node.duration = '5 min';
+      node.level = 'Overview';
+      node.summary = `Understand the core ideas behind ${title.toLowerCase()} and when they matter.`;
+      node.sections = [
+        ['In brief', `This stage introduces ${title.toLowerCase()}. Start with the problem it solves, the common choices, and the information you need before selecting a tool.`],
+        ['When is it useful?', `Use these ideas when working on ${domainById[node.domain].title}.`],
+        ['Check yourself', 'Can you describe a real situation, the decision to make, and how you would verify the result?'],
+      ];
+      node.takeaway = `You know what to ask before studying ${title.toLowerCase()} in depth.`;
+    }
+  });
+}

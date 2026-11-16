@@ -10,7 +10,8 @@ mkdirSync(join(dist, 'src'), { recursive: true });
 const hash = source => createHash('sha256').update(source).digest('hex').slice(0, 10);
 const css = readFileSync(join(root, 'styles.css'), 'utf8');
 const data = readFileSync(join(root, 'src', 'data.js'), 'utf8');
-const app = readFileSync(join(root, 'src', 'app.js'), 'utf8').replace("from './data.js'", `from './data.js?v=${hash(data)}'`);
+const locale = readFileSync(join(root, 'src', 'locale.js'), 'utf8');
+const app = readFileSync(join(root, 'src', 'app.js'), 'utf8').replace("from './data.js'", `from './data.js?v=${hash(data)}'`).replace("from './locale.js'", `from './locale.js?v=${hash(locale)}'`);
 const html = readFileSync(join(root, 'index.html'), 'utf8')
   .replace('href="./styles.css"', `href="./styles.css?v=${hash(css)}"`)
   .replace('src="./src/app.js"', `src="./src/app.js?v=${hash(app)}"`);
@@ -18,5 +19,6 @@ writeFileSync(join(dist, 'index.html'), html);
 writeFileSync(join(dist, 'styles.css'), css);
 writeFileSync(join(dist, 'src', 'app.js'), app);
 writeFileSync(join(dist, 'src', 'data.js'), data);
+writeFileSync(join(dist, 'src', 'locale.js'), locale);
 writeFileSync(join(dist, '.nojekyll'), '');
 console.log('Đã tạo dist/ cho GitHub Pages.');
